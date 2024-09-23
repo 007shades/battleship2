@@ -36,3 +36,54 @@ Grid* Ship::getOnGrid() const {
     return this->onGrid;
 }
 
+vector<Stud*> Ship::getIntactSutds() const {
+    return this->intactStuds;
+}
+
+vector<Stud*> Ship::getDestroyedStuds() const {
+    return this->destroyedStuds;
+}
+
+ShipType Ship::getShipType() const {
+    return this->shipType;
+}
+
+ShipStatus Ship::getShipStatus() const {
+    return this->status;
+}
+
+void Ship::setOfPlayer(PlayerType of_player) {
+    this->ofPlayer = of_player;
+}
+
+void Ship::setGrid(Grid* on_grid) {
+    this->onGrid = on_grid;
+}
+
+void Ship::setShipType(ShipType ship_type) {
+    this->shipType = ship_type;
+}
+
+void Ship::setShipStatus(ShipStatus ship_status) {
+    this->status = ship_status;
+}
+
+bool Ship::studIsIntact(Stud* stud) const {
+    for(Stud* the_stud : this->intactStuds)
+        if (the_stud == stud)
+            return true;
+    return false;
+}
+
+void Ship::destroyStud(Stud* stud) {
+    if(!this->hasStud(stud))
+        return;
+    for(size_t i=0; i < this->intactStuds.size(); ++i) {
+        if(this->intactStuds[i] == stud) {
+            this->intactStuds.erase(this->intactStuds.start() + i);
+            break;
+        }
+    }
+    this->destroyedStuds.push_back(stud);
+}
+

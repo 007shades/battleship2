@@ -38,11 +38,11 @@ class Ship {
         void setGrid(Grid* on_grid);
         void setShipType(ShipType ship_type);
         void setShipStatus(ShipStatus ship_status);
+        bool studIsIntact(Stud* stud) const;
         virtual void setStuds() = 0;
-        virtual bool hasStud(Stud* stud) const;
-        virtual void placeOnGrid(string start_space, char direction) const;
+        virtual bool hasStud(Stud* stud) const = 0;
+        virtual void placeOnGrid(string start_space, char direction) const = 0;
         void destroyStud(Stud* stud);
-        void target(Stud* stud);
 
 };
 
