@@ -132,7 +132,7 @@ void GridSpace::modifyLabel() {
     else {
         if(this->hasStud())
             this->label = this->stud->getLabel();
-        else this->label = 'ˣ';
+        else this->label = '@';
     }
 }
 

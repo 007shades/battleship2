@@ -228,6 +228,7 @@ vector<string> Grid::neighborSpaces(vector<string> space_strings) {
                 if(neighbor_space != space_strings[i - 1] && neighbor_space != space_strings[i + 1])
                     neighbors.push_back(neighbor_space);
     }
+    return neighbors;
 }
 
 TargetResult Grid::target(string space_string) const {

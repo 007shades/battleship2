@@ -6,11 +6,11 @@
 
 enum SpaceStatus {UNTARGETED, TARGETED};
 
-enum StudStatus {INTACT, TARGETED};
+enum StudStatus {INTACT, COMPROMISED};
 
 enum ShipStatus {AFLOAT, SUNKEN};
 
-enum StudName {A1, A2, A3, A4, A5, B1, B2, B3, B4, D1, D2, D3, S1, S2, S3, C1, C2};
+enum StudName {A_1, A_2, A_3, A_4, A_5, B_1, B_2, B_3, B_4, D_1, D_2, D_3, S_1, S_2, S_3, C_1, C_2};
 
 enum Column {ALPHA = 'A', BRAVO, CHARLIE, DELTA, ECHO, FOXTROT, GULF, INDIA, JULIET};
 

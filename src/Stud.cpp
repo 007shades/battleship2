@@ -109,10 +109,10 @@ void Stud::setLabel(char stud_label) {
 }
 
 bool Stud::wasHit() const {
-    return this->status == TARGETED;
+    return this->status == COMPROMISED;
 }
 
 void Stud::hit() {
-    this->status = TARGETED;
+    this->status = COMPROMISED;
     this->label = static_cast<char>(tolower(static_cast<unsigned char>(this->label)));
 }

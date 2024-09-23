@@ -21,7 +21,7 @@ class GridSpace {
         SpaceStatus status {UNTARGETED};
         Stud* stud {nullptr};
         string spaceString;
-        char label {'·'};
+        char label {'+'};
         char letter;
         char number;
         void set_space_data(SpaceName space_name);
