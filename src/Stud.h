@@ -11,6 +11,8 @@ the Ship will sink.*/
 
 class GridSpace;
 
+class Ship;
+
 class Stud {
     private:
         StudName studName;
@@ -19,6 +21,7 @@ class Stud {
         PlayerType ofPlayer;
         StudStatus status {INTACT};
         GridSpace* gridspace {nullptr};
+        Ship* ofShip {nullptr};
         char label;
         void set_ship_type(StudName stud_name);
     public:
@@ -28,17 +31,20 @@ class Stud {
         Stud(StudName stud_name, PlayerType of_player);
         Stud(StudName stud_name, GridSpace* grid_space, StudStatus the_status);
         Stud(StudName stud_name, PlayerType of_player, StudStatus the_status);
+        Stud(StudName stud_name, PlayerType of_player, Ship* of_ship);
         ~Stud();
         StudName getStudName() const;
         SpaceName getOnSpace() const;
         ShipType getForShip() const;
         PlayerType getOfPlayer() const;
         StudStatus getStatus() const;
+        Ship* getOfShip() const;
         char getLabel() const;
         void setStudName(StudName stud_name);
         void setOnSpace(SpaceName on_space);
         void setOfPlayer(PlayerType for_player);
         void setStatus(StudStatus stud_status);
+        void setOfShip(Ship* of_ship);
         void setLabel(char stud_label);
         bool wasHit() const;
         void hit();

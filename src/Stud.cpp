@@ -1,6 +1,7 @@
 #include "Stud.h"
 
 #include "Enums.h"
+#include "Ship.h"
 
 #include <cctype>
 
@@ -59,8 +60,14 @@ Stud::Stud(StudName stud_name, PlayerType of_player, StudStatus the_status) : st
     set_ship_type(stud_name);
 }
 
+Stud::Stud(StudName stud_name, PlayerType of_player, Ship* of_ship) : studName{stud_name}, ofPlayer{of_player}, ofShip{of_ship}
+{
+    set_ship_type(stud_name);
+}
+
 Stud::~Stud() {
     this->gridspace = nullptr;
+    this->ofShip = nullptr;
 }
 
 StudName Stud::getStudName() const {
@@ -81,6 +88,10 @@ PlayerType Stud::getOfPlayer() const {
 
 StudStatus Stud::getStatus() const {
     return this->status;
+}
+
+Ship* Stud::getOfShip() const {
+    return this->ofShip;
 }
 
 char Stud::getLabel() const {
@@ -104,6 +115,10 @@ void Stud::setStatus(StudStatus the_status) {
     this->status = the_status;
 }
 
+void Stud::setOfShip(Ship* of_ship) {
+    this->ofShip = of_ship;
+}
+
 void Stud::setLabel(char stud_label) {
     this->label = stud_label;
 }
@@ -115,4 +130,6 @@ bool Stud::wasHit() const {
 void Stud::hit() {
     this->status = COMPROMISED;
     this->label = static_cast<char>(tolower(static_cast<unsigned char>(this->label)));
+    if(this->ofShip != nullptr)
+        this->ofShip->destroyStud(this);
 }
