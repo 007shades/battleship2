@@ -7,6 +7,10 @@ the Ship will sink.*/
 
 #include "Enums.h"
 
+#include "GridSpace.h"
+
+class GridSpace;
+
 class Stud {
     private:
         StudName studName;
@@ -14,23 +18,28 @@ class Stud {
         ShipType forShip;
         PlayerType ofPlayer;
         StudStatus status {INTACT};
+        GridSpace* gridspace {nullptr};
+        char label;
         void set_ship_type(StudName stud_name);
     public:
         Stud();
         explicit Stud(StudName stud_name);
-        Stud(StudName stud_name, SpaceName on_space);
-        Stud(StudName stud_name, SpaceName on_space, PlayerType of_player);
-        Stud(StudName stud_name, SpaceName on_space, PlayerType of_player, StudStatus the_status);
-        ~Stud() = default;
+        Stud(StudName stud_name, GridSpace* grid_space);
+        Stud(StudName stud_name, PlayerType of_player);
+        Stud(StudName stud_name, GridSpace* grid_space, StudStatus the_status);
+        Stud(StudName stud_name, PlayerType of_player, StudStatus the_status);
+        ~Stud();
         StudName getStudName() const;
-        SpaceName getSpaceName() const;
+        SpaceName getOnSpace() const;
         ShipType getForShip() const;
         PlayerType getOfPlayer() const;
-        StudStatus getStudStatus() const;
+        StudStatus getStatus() const;
+        char getLabel() const;
         void setStudName(StudName stud_name);
-        void setForSpace(SpaceName on_space);
+        void setOnSpace(SpaceName on_space);
         void setOfPlayer(PlayerType for_player);
-        void setStudStatus(StudStatus stud_status);
+        void setStatus(StudStatus stud_status);
+        void setLabel(char stud_label);
         bool wasHit() const;
         void hit();
 };

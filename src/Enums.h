@@ -4,15 +4,17 @@
 #include <string>
     using std::string;
 
+enum SpaceStatus {UNTARGETED, TARGETED};
+
 enum StudStatus {INTACT, TARGETED};
 
 enum ShipStatus {AFLOAT, SUNKEN};
 
 enum StudName {A1, A2, A3, A4, A5, B1, B2, B3, B4, D1, D2, D3, S1, S2, S3, C1, C2};
 
-enum LetterName {ALPHA = 'A', BRAVO, CHARLIE, DELTA, ECHO, FOXTROT, GULF, INDIA, JULIET};
+enum Column {ALPHA = 'A', BRAVO, CHARLIE, DELTA, ECHO, FOXTROT, GULF, INDIA, JULIET};
 
-enum NumberName {ONE = 1, TWO, THREE, FOUR, FIVE, SIX, SEVEN, EIGHT, NINE, TEN};
+enum Row {ONE = 1, TWO, THREE, FOUR, FIVE, SIX, SEVEN, EIGHT, NINE, TEN};
 
 enum ShipType {Carrier, Battleship, Submarine, Destroyer, Cruiser};
 
@@ -63,10 +65,17 @@ struct Spaces {
         "A10", "B10", "C10", "D10", "E10", "F10", "G10", "H10", "I10", "J10"
     };
 
+    inline static Column columnNames[] = {ALPHA, BRAVO, CHARLIE, DELTA, ECHO, FOXTROT, GULF, INDIA, JULIET};
+    inline static Row rowNames[]= {ONE, TWO, THREE, FOUR, FIVE, SIX, SEVEN, EIGHT, NINE, TEN};
+    inline static char columnChars[] = {'A','B','C','D','E','F','G','H','I'};
+    inline static char rowChars[] = {'1','2','3','4','5','6','7','8','9','0'};
+
     static SpaceName nameFromString(string space_string);
     static string stringFromName(SpaceName space_name);
-
-
+    static Column columnFromChar(char the_char);
+    static Row rowFromChar(char the_char);
+    static char charFromColumn(Column the_column);
+    static char charFromRow(Row the_row);
 };
 
 #endif
