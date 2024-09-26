@@ -52,6 +52,10 @@ ShipStatus Ship::getShipStatus() const {
     return this->status;
 }
 
+bool Ship::getIsOnGrid() const {
+    return this->isOnGrid;
+}
+
 void Ship::setOfPlayer(PlayerType of_player) {
     this->ofPlayer = of_player;
 }
@@ -68,6 +72,10 @@ void Ship::setShipStatus(ShipStatus ship_status) {
     this->status = ship_status;
 }
 
+void Ship::setIsOnGrid(bool is_on_grid) {
+    this->isOnGrid = is_on_grid;
+}
+
 bool Ship::studIsIntact(Stud* stud) const {
     for(Stud* the_stud : this->intactStuds)
         if (the_stud == stud)
@@ -78,9 +86,11 @@ bool Ship::studIsIntact(Stud* stud) const {
 void Ship::destroyStud(Stud* stud) {
     if(!this->hasStud(stud))
         return;
+    if(!this->studIsIntact(stud))
+        return;
     for(size_t i=0; i < this->intactStuds.size(); ++i) {
         if(this->intactStuds[i] == stud) {
-            this->intactStuds.erase(this->intactStuds.start() + i);
+            this->intactStuds.erase(this->intactStuds.begin() + i);
             break;
         }
     }

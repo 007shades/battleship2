@@ -16,7 +16,7 @@ SpaceName Spaces::nameFromString(string space_string) {
 
 string Spaces::stringFromName(SpaceName space_name) {
     size_t space_name_int = static_cast<size_t>(space_name);
-    return spaceStrings[space_name_int];
+    return spaceStrings[space_name_int - 1];
 }
 
 Column Spaces::columnFromChar(char the_char) {

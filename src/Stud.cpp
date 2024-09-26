@@ -9,23 +9,23 @@
 void Stud::set_ship_type(StudName stud_name){
     int stud_int = static_cast<int>(stud_name);
     if (stud_int < 5) {
-        this->forShip = Carrier;
+        this->forShip = CARRIER;
         this->label = 'A';
     }
     else if (stud_int < 9) {
-        this->forShip = Battleship;
+        this->forShip = BATTLESHIP;
         this->label = 'B';
     }
     else if (stud_int < 12) {
-        this->forShip = Destroyer;
+        this->forShip = DESTROYER;
         this->label = 'D';
     }
     else if (stud_int < 15) {
-        this->forShip = Submarine;
+        this->forShip = SUBMARINE;
         this->label = 'S';
     }
     else {
-        this->forShip = Cruiser;
+        this->forShip = CRUISER;
         this->label = 'C';
     }
 }

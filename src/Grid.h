@@ -22,6 +22,7 @@ class Grid {
         vector<SpaceName> noGoSpaces;
         void populate_grid();
         void populate_grid(PlayerType of_player);
+
     public:
         Grid();
         explicit Grid(PlayerType of_player);
@@ -54,8 +55,12 @@ class Grid {
         
         static vector<string> neighborSpaces(string space_string);
         static vector<string> neighborSpaces(vector<string> space_strings);
+
+        void setOnSpace(string space, Stud* stud) const;
         
         TargetResult target(string space_string) const;
+
+        void showGrid() const;
 };
 
 #endif

@@ -1,4 +1,4 @@
-#include "Carrier.h"
+#include "Battleship.h"
 #include "Ship.h"
 
 #include "Enums.h"
@@ -18,43 +18,52 @@
     using std::cout;
     using std::endl;
 
-Carrier::Carrier() : Ship(ShipType::CARRIER) {}
+Battleship::Battleship() : Ship(ShipType::BATTLESHIP) {}
 
-Carrier::Carrier(PlayerType of_player) : Ship(ShipType::CARRIER, of_player) {}
+Battleship::Battleship(PlayerType of_player) : Ship(ShipType::BATTLESHIP, of_player) {}
 
-Carrier::Carrier(Grid* on_grid) : Ship(ShipType::CARRIER, on_grid) {}
+Battleship::Battleship(Grid* on_grid) : Ship(ShipType::BATTLESHIP, on_grid) 
+{
+    this->setStuds();
+}
 
-Carrier::~Carrier() {
-    for(size_t i = 0; i < 5; ++i) {
+Battleship::Battleship(Grid* on_grid, string start_space, char direction) : Ship (ShipType::BATTLESHIP, on_grid)
+{
+    this->setStuds();
+    this->isReady = this->placeOnGrid(start_space, direction);
+}
+
+Battleship::~Battleship() {
+    for(size_t i = 0; i < 4; ++i) {
         delete this->studs[i];
         this->studs[i] = nullptr;
     }
 } 
 
-array<Stud*, 5> Carrier::getStuds() const {
+array<Stud*, 4> Battleship::getStuds() const {
     return this->studs;
 }
 
-Stud* Carrier::getStud(StudName stud_name) const {
+Stud* Battleship::getStud(StudName stud_name) const {
     for(Stud* stud : this->studs)
         if(stud->getStudName() == stud_name)
             return stud;
     return nullptr;
 }
 
-bool Carrier::hasStud(Stud* stud) const {
+bool Battleship::hasStud(Stud* stud) const {
     for(Stud* the_stud : this->studs)
         if(the_stud == stud)
             return true;
     return false;
 }
 
-void Carrier::setStuds() {
-    for(size_t i=0; i<5; i++)
+void Battleship::setStuds() {
+    for(size_t i=5; i<9; i++)
         this->studs[i] = new Stud(Studs::studNames[i], this->ofPlayer, this);
 }
 
-bool Carrier::placeOnGrid(string start_space, char direction) const {
+bool Battleship::placeOnGrid(string start_space, char direction) const {
     vector<string> ship_spaces;
     try {
         ship_spaces = Grid::getVector(start_space, direction, 4);
@@ -66,7 +75,7 @@ bool Carrier::placeOnGrid(string start_space, char direction) const {
         cout << "Ships cannot be touching." << endl;
         return false;
     }
-    for(size_t i = 0; i < 5; i++)
+    for(size_t i = 0; i < 4; i++)
         this->onGrid->setOnSpace(ship_spaces[i], this->studs[i]);
     vector<string> ship_neighbors = Grid::neighborSpaces(ship_spaces);
     this->onGrid->addNoGoSpaces(ship_spaces);

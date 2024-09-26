@@ -16,7 +16,7 @@ enum Column {ALPHA = 'A', BRAVO, CHARLIE, DELTA, ECHO, FOXTROT, GULF, INDIA, JUL
 
 enum Row {ONE = 1, TWO, THREE, FOUR, FIVE, SIX, SEVEN, EIGHT, NINE, TEN};
 
-enum ShipType {Carrier, Battleship, Submarine, Destroyer, Cruiser};
+enum ShipType {CARRIER, BATTLESHIP, SUBMARINE, DESTROYER, CRUISER};
 
 enum CamdenType {EASY, HARD};
 
@@ -67,7 +67,7 @@ struct Spaces {
 
     inline static Column columnNames[] = {ALPHA, BRAVO, CHARLIE, DELTA, ECHO, FOXTROT, GULF, INDIA, JULIET};
     inline static Row rowNames[]= {ONE, TWO, THREE, FOUR, FIVE, SIX, SEVEN, EIGHT, NINE, TEN};
-    inline static char columnChars[] = {'A','B','C','D','E','F','G','H','I'};
+    inline static char columnChars[] = {'A','B','C','D','E','F','G','H','I','J'};
     inline static char rowChars[] = {'1','2','3','4','5','6','7','8','9','0'};
 
     static SpaceName nameFromString(string space_string);
@@ -76,6 +76,10 @@ struct Spaces {
     static Row rowFromChar(char the_char);
     static char charFromColumn(Column the_column);
     static char charFromRow(Row the_row);
+};
+
+struct Studs {
+    inline static StudName studNames[] = {A_1, A_2, A_3, A_4, A_5, B_1, B_2, B_3, B_4, D_1, D_2, D_3, S_1, S_2, S_3, C_1, C_2};
 };
 
 #endif

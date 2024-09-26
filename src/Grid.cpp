@@ -14,6 +14,10 @@
     using std::out_of_range;
     using std::invalid_argument;
 
+#include <iostream>
+    using std::cout;
+    using std::endl;
+
 #include "Enums.h"
 
 #include "GridSpace.h"
@@ -70,8 +74,7 @@ void Grid::addNoGoSpace(SpaceName space) {
 
 void Grid::addNoGoSpaces(vector<string> space_strings) {
     for(string space_string : space_strings)
-        if(this->isNoGoSpace(space_string))
-            this->addNoGoSpace(Spaces::nameFromString(space_string));
+        this->addNoGoSpace(Spaces::nameFromString(space_string));
 }
 
 GridSpace* Grid::getSpace(SpaceName space_name) const {
@@ -231,6 +234,27 @@ vector<string> Grid::neighborSpaces(vector<string> space_strings) {
     return neighbors;
 }
 
+void Grid::setOnSpace(string space, Stud* stud) const {
+    GridSpace* gspace = this->getSpace(space);
+    gspace->addStud(stud);
+    stud->setOnSpace(gspace->getSpaceName());
+}
+
 TargetResult Grid::target(string space_string) const {
     return this->getSpace(space_string)->target();
+}
+
+void Grid::showGrid() const {
+    cout << "      A B C D E F G H I J\n";
+    cout << "" << endl;
+    for(int i = 0; i < 10; i++) {
+        if (i == 9)
+            cout << (i + 1);
+        else
+            cout << " " << (i + 1);
+        cout << "    ";
+        for(int j = 0; j < 10; j++)
+            cout << this->getSpace(i + 1, j + 1)->getLabel() << " ";
+        cout << "\n";
+    }
 }

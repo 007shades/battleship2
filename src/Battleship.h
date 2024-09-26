@@ -1,5 +1,5 @@
-#ifndef CARRIER_H
-#define CARRIER_H
+#ifndef BATTLESHIP_H
+#define BATTLESHIP_H
 
 #include "Enums.h"
 #include "Stud.h"
@@ -13,15 +13,16 @@
 
 #include "Ship.h"
 
-class Carrier : public Ship {
+class Battleship : public Ship {
     private:
-        array<Stud*, 5> studs;
+        array<Stud*, 4> studs;
     public:
-        Carrier();
-        explicit Carrier(PlayerType of_player);
-        explicit Carrier(Grid* on_grid);
-        ~Carrier();
-        array<Stud*, 5> getStuds() const;
+        Battleship();
+        explicit Battleship(PlayerType of_player);
+        explicit Battleship(Grid* on_grid);
+        Battleship(Grid* on_grid, string start_space, char direction);
+        ~Battleship();
+        array<Stud*, 4> getStuds() const;
         Stud* getStud(StudName stud_name) const;
         bool hasStud(Stud* stud) const override;
         void setStuds() override;

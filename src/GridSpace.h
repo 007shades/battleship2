@@ -4,9 +4,6 @@
 #include <string>
     using std::string;
 
-#include <sstream>
-    using std::ostream;
-
 #include "Enums.h"
 #include "Stud.h"
 
@@ -25,8 +22,6 @@ class GridSpace {
         char letter;
         char number;
         void set_space_data(SpaceName space_name);
-        
-        friend ostream& operator<<(ostream& out, const GridSpace*&);
 
     public:
         GridSpace();
@@ -53,7 +48,7 @@ class GridSpace {
         void setStud(Stud* the_stud);
         void setLabel(char label);
         
-        void addStud(Stud* stud);
+        void addStud(Stud* the_stud);
 
         bool hasStud() const;
         bool wasTargeted() const;

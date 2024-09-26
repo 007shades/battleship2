@@ -10,9 +10,7 @@
     using std::out_of_range;
     using std::invalid_argument;
 
-#include <sstream>
-    using std::ostream;
-
+    
 void GridSpace::set_space_data(SpaceName space_name) {
     string space_string = Spaces::stringFromName(space_name);
     char letter = space_string.at(0);
@@ -111,11 +109,11 @@ void GridSpace::setLabel(char label) {
     this->label = label;
 }
 
-void GridSpace::addStud(Stud* stud) {
+void GridSpace::addStud(Stud* the_stud) {
     if(this->hasStud())
         throw invalid_argument("Space already occupied.");
-    this->stud = stud;
-    this->label = stud->getLabel();
+    this->stud = the_stud;
+    this->label = the_stud->getLabel();
 }
 
 bool GridSpace::hasStud() const {
@@ -148,8 +146,4 @@ TargetResult GridSpace::target() {
         this->modifyLabel(); 
         return TargetResult::MISS;
     }
-}
-
-ostream& operator<< (ostream& out, GridSpace*& gridspace) {
-    return out << gridspace->getLabel();
 }

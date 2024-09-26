@@ -14,13 +14,15 @@
 class Stud;
 
 class Ship {
-    private:
+    protected:
         PlayerType ofPlayer;
         Grid* onGrid {nullptr};
         vector<Stud*> intactStuds;
         vector<Stud*> destroyedStuds;
         ShipType shipType;
         ShipStatus status {AFLOAT};
+        bool isOnGrid {false};
+        bool isReady {false};
     public:
         Ship();
         explicit Ship(ShipType ship_type);
@@ -34,14 +36,16 @@ class Ship {
         vector<Stud*> getDestroyedStuds() const;
         ShipType getShipType() const;
         ShipStatus getShipStatus() const;
+        bool getIsOnGrid() const;
         void setOfPlayer(PlayerType of_player);
         void setGrid(Grid* on_grid);
         void setShipType(ShipType ship_type);
         void setShipStatus(ShipStatus ship_status);
+        void setIsOnGrid(bool is_on_grid);
         bool studIsIntact(Stud* stud) const;
         virtual void setStuds() = 0;
         virtual bool hasStud(Stud* stud) const = 0;
-        virtual void placeOnGrid(string start_space, char direction) const = 0;
+        virtual bool placeOnGrid(string start_space, char direction) const = 0;
         void destroyStud(Stud* stud);
 
 };
