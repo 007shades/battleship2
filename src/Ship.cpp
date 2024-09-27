@@ -9,14 +9,46 @@
 #include <vector>
     using std::vector;
 
+void Ship::set_ship_name(ShipType ship_type) {
+    switch (ship_type) {
+        case CARRIER: {
+            this->shipName = "Carrier";
+            break;
+        }
+        case BATTLESHIP: {
+            this->shipName = "Battleship";
+            break;
+        }
+        case DESTROYER: {
+            this->shipName = "Destroyer";
+            break;
+        }
+        case SUBMARINE: {
+            this->shipName = "Submarine";
+            break;
+        }
+        case CRUISER: {
+            this->shipName = "Cruiser";
+            break;
+        }
+    }
+}
+
 Ship::Ship() {}
 
-Ship::Ship(ShipType ship_type) : shipType{ship_type} {}
+Ship::Ship(ShipType ship_type) : shipType{ship_type}
+{
+    this->set_ship_name(ship_type);
+}
 
-Ship::Ship(ShipType ship_type, PlayerType of_player) : shipType {ship_type}, ofPlayer {of_player} {}
+Ship::Ship(ShipType ship_type, PlayerType of_player) : shipType {ship_type}, ofPlayer {of_player} 
+{
+    this->set_ship_name(ship_type);
+}
 
 Ship::Ship(ShipType ship_type, Grid* on_grid) : shipType {ship_type}, onGrid {on_grid}
 {
+    this->set_ship_name(ship_type);
     this->ofPlayer = on_grid->getOfPlayer();
 }
 
@@ -48,6 +80,10 @@ ShipType Ship::getShipType() const {
     return this->shipType;
 }
 
+string Ship::getShipName() const {
+    return this->shipName;
+}
+
 ShipStatus Ship::getShipStatus() const {
     return this->status;
 }
@@ -70,6 +106,7 @@ void Ship::setGrid(Grid* on_grid) {
 
 void Ship::setShipType(ShipType ship_type) {
     this->shipType = ship_type;
+    this->set_ship_name(ship_type);
 }
 
 void Ship::setShipStatus(ShipStatus ship_status) {

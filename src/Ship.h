@@ -20,9 +20,11 @@ class Ship {
         vector<Stud*> intactStuds;
         vector<Stud*> destroyedStuds;
         ShipType shipType;
+        string shipName;
         ShipStatus status {AFLOAT};
         bool isOnGrid {false};
         bool isReady {false};
+        void set_ship_name(ShipType ship_type);
     public:
         Ship();
         explicit Ship(ShipType ship_type);
@@ -35,6 +37,7 @@ class Ship {
         vector<Stud*> getIntactSutds() const;
         vector<Stud*> getDestroyedStuds() const;
         ShipType getShipType() const;
+        string getShipName() const;
         ShipStatus getShipStatus() const;
         bool getIsOnGrid() const;
         bool getIsReady() const;
