@@ -59,8 +59,10 @@ bool Battleship::hasStud(Stud* stud) const {
 }
 
 void Battleship::setStuds() {
-    for(size_t i=5; i<9; i++)
-        this->studs[i] = new Stud(Studs::studNames[i], this->ofPlayer, this);
+    for(size_t i=5, j=0; i<9; i++, j++){
+        this->studs[j] = new Stud(Studs::studNames[i], this->ofPlayer, this);
+        this->intactStuds.push_back(this->studs[j]);
+    }
 }
 
 bool Battleship::placeOnGrid(string start_space, char direction) const {

@@ -70,6 +70,7 @@ struct Spaces {
     inline static char columnChars[] = {'A','B','C','D','E','F','G','H','I','J'};
     inline static char rowChars[] = {'1','2','3','4','5','6','7','8','9','0'};
 
+    static bool isSpaceString(string space_string);
     static SpaceName nameFromString(string space_string);
     static string stringFromName(SpaceName space_name);
     static Column columnFromChar(char the_char);

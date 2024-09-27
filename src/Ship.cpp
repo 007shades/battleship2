@@ -128,6 +128,10 @@ bool Ship::studIsIntact(Stud* stud) const {
     return false;
 }
 
+bool Ship::wasSunk() const {
+    return this->isReady && !this->intactStuds.size();
+}
+
 void Ship::destroyStud(Stud* stud) {
     if(!this->hasStud(stud))
         return;

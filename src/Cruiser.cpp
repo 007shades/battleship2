@@ -22,7 +22,10 @@ Cruiser::Cruiser() : Ship(ShipType::CRUISER) {}
 
 Cruiser::Cruiser(PlayerType of_player) : Ship(ShipType::CRUISER, of_player) {}
 
-Cruiser::Cruiser(Grid* on_grid) : Ship(ShipType::CRUISER, on_grid) {}
+Cruiser::Cruiser(Grid* on_grid) : Ship(ShipType::CRUISER, on_grid) 
+{
+    this->setStuds();
+}
 
 Cruiser::Cruiser(Grid* on_grid, string start_space, char direction) : Ship (ShipType::BATTLESHIP, on_grid)
 {
@@ -57,8 +60,10 @@ bool Cruiser::hasStud(Stud* stud) const {
 }
 
 void Cruiser::setStuds() {
-    for(size_t i=15; i<17; i++)
-        this->studs[i] = new Stud(Studs::studNames[i], this->ofPlayer, this);
+    for(size_t i=15, j=0; i<17; i++, j++){
+        this->studs[j] = new Stud(Studs::studNames[i], this->ofPlayer, this);
+        this->intactStuds.push_back(this->studs[j]);
+    }
 }
 
 bool Cruiser::placeOnGrid(string start_space, char direction) const {

@@ -22,7 +22,10 @@ Destroyer::Destroyer() : Ship(ShipType::DESTROYER) {}
 
 Destroyer::Destroyer(PlayerType of_player) : Ship(ShipType::DESTROYER, of_player) {}
 
-Destroyer::Destroyer(Grid* on_grid) : Ship(ShipType::DESTROYER, on_grid) {}
+Destroyer::Destroyer(Grid* on_grid) : Ship(ShipType::DESTROYER, on_grid) 
+{
+    this->setStuds();
+}
 
 Destroyer::Destroyer(Grid* on_grid, string start_space, char direction) : Ship (ShipType::BATTLESHIP, on_grid)
 {
@@ -57,8 +60,10 @@ bool Destroyer::hasStud(Stud* stud) const {
 }
 
 void Destroyer::setStuds() {
-    for(size_t i=9; i<12; i++)
-        this->studs[i] = new Stud(Studs::studNames[i], this->ofPlayer, this);
+    for(size_t i=9, j=0; i<12; i++, j++){
+        this->studs[j] = new Stud(Studs::studNames[i], this->ofPlayer, this);
+        this->intactStuds.push_back(this->studs[j]);
+    }
 }
 
 bool Destroyer::placeOnGrid(string start_space, char direction) const {

@@ -22,7 +22,10 @@ Submarine::Submarine() : Ship(ShipType::SUBMARINE) {}
 
 Submarine::Submarine(PlayerType of_player) : Ship(ShipType::SUBMARINE, of_player) {}
 
-Submarine::Submarine(Grid* on_grid) : Ship(ShipType::SUBMARINE, on_grid) {}
+Submarine::Submarine(Grid* on_grid) : Ship(ShipType::SUBMARINE, on_grid) 
+{
+    this->setStuds();
+}
 
 Submarine::Submarine(Grid* on_grid, string start_space, char direction) : Ship (ShipType::BATTLESHIP, on_grid)
 {
@@ -56,8 +59,10 @@ bool Submarine::hasStud(Stud* stud) const {
 }
 
 void Submarine::setStuds() {
-    for(size_t i=12; i<15; i++)
-        this->studs[i] = new Stud(Studs::studNames[i], this->ofPlayer, this);
+    for(size_t i=12, j=0; i<15; i++, j++){
+        this->studs[j] = new Stud(Studs::studNames[i], this->ofPlayer, this);
+        this->intactStuds.push_back(this->studs[j]);
+    }
 }
 
 bool Submarine::placeOnGrid(string start_space, char direction) const {

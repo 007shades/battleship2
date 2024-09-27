@@ -22,7 +22,10 @@ Carrier::Carrier() : Ship(ShipType::CARRIER) {}
 
 Carrier::Carrier(PlayerType of_player) : Ship(ShipType::CARRIER, of_player) {}
 
-Carrier::Carrier(Grid* on_grid) : Ship(ShipType::CARRIER, on_grid) {}
+Carrier::Carrier(Grid* on_grid) : Ship(ShipType::CARRIER, on_grid) 
+{
+    this->setStuds();
+}
 
 Carrier::Carrier(Grid* on_grid, string start_space, char direction) : Ship (ShipType::BATTLESHIP, on_grid)
 {
@@ -57,8 +60,10 @@ bool Carrier::hasStud(Stud* stud) const {
 }
 
 void Carrier::setStuds() {
-    for(size_t i=0; i<5; i++)
+    for(size_t i=0; i<5; i++){
         this->studs[i] = new Stud(Studs::studNames[i], this->ofPlayer, this);
+        this->intactStuds.push_back(this->studs[i]);
+    }
 }
 
 bool Carrier::placeOnGrid(string start_space, char direction) const {

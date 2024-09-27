@@ -56,10 +56,25 @@ class Player {
         bool shipIsFloating(Ship* ship) const;
         bool shipIsSunken(Ship* ship) const;
 
+        void stillFloating() const;
+        void notSunkYet() const;
+        void showFoe() const;
+        void showOwn() const;
+
+        Ship* justSunkenShip() const;
+
         void sinkShip(Ship* ship);
-        void target(string space);
+
+        bool spaceWasTargeted(string space) const;
+        
+        bool target(string space);
+
+        bool processInput(string input);
         
         bool allShipsAreSunk() const;
+
+        void setCarrier();
+        
 
 };
 

@@ -48,6 +48,7 @@ class Ship {
         void setIsOnGrid(bool is_on_grid);
         void setIsReady(bool is_ready);
         bool studIsIntact(Stud* stud) const;
+        bool wasSunk() const;
         virtual void setStuds() = 0;
         virtual bool hasStud(Stud* stud) const = 0;
         virtual bool placeOnGrid(string start_space, char direction) const = 0;

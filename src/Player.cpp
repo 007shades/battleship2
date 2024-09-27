@@ -53,6 +53,8 @@ Player::~Player() {
     }
     delete this->grid;
     this->grid = nullptr;
+    this->foe = nullptr;
+    this->foeGrid = nullptr;
 }
 
 PlayerType Player::getPlayerType() const {
@@ -149,6 +151,31 @@ bool Player::shipIsSunken(Ship* ship) const {
     return false;
 }
 
+void Player::stillFloating() const {
+    for(Ship* ship : this->floatingShips)
+        cout << ship->getShipName() << endl;
+}
+
+void Player::notSunkYet() const {
+    for(Ship* ship : this->foe->getFloatingShips())
+        cout << ship->getShipName() << endl;
+}
+
+void Player::showFoe() const {
+    this->foeGrid->showGrid();
+}
+
+void Player::showOwn() const {
+    this->grid->showGrid();
+}
+
+Ship* Player::justSunkenShip() const {
+    for(Ship* ship : this->floatingShips)
+        if(ship->wasSunk())
+            return ship;
+    return nullptr;
+}
+
 void Player::sinkShip(Ship* ship) {
     if(!(this->hasShip(ship) && this->shipIsFloating(ship)))
         return;
@@ -159,20 +186,70 @@ void Player::sinkShip(Ship* ship) {
         }
 }
 
-void Player::target(string space) {
+bool Player::spaceWasTargeted(string space) const {
+    for(string the_space : this->targetedSpaces)
+        if(space == the_space)
+            return true;
+        
+}
+
+bool Player::target(string space) {
     if(this->foeGrid == nullptr)
         throw domain_error("Foe grid not set.");
-    
+    if(!Spaces::isSpaceString(space)) {
+        cout << "Invalid space / command." << endl;
+        return false;
+    }
+    if(this->spaceWasTargeted(space)) {
+        cout << "Space already targeted." << endl;
+        return false;
+    }
     TargetResult shot = this->foeGrid->target(space);
     this->targetedSpaces.push_back(space);
     switch (shot) {
         case MISS: {
             this->missSpaces.push_back(space);
             this->HMHist.push_back('M');
+            cout << "Miss" << endl;
+            break;
         }
+        case HIT: {
+            this->hitSpaces.push_back(space);
+            this->HMHist.push_back('H');
+            cout << "Hit" << endl;
+            Ship* sunk_ship = this->foe->justSunkenShip();
+            if(sunk_ship != nullptr) {
+                cout << this->foe->getName() << "\'s " << sunk_ship->getShipName() << " has been sunk!" << endl;
+                this->foe->sinkShip(sunk_ship);
+            }
+            break;
+        }
+    };
+    return true;
+}
+
+bool Player::processInput(string input) {
+    if (input == "unsunk") {
+        this->notSunkYet();
+        return false;
+    } else if (input == "afloat") {
+        this->stillFloating();
+        return false;
+    } else if (input == "foe") {
+        this->showFoe();
+        return false;
+    } else if(input == "own") {
+        this->showOwn();
+        return false;
+    } else {
+        return this->target(input);
     }
 }
 
 bool Player::allShipsAreSunk() const {
     return ! this->floatingShips.size() && this->sunkenShips.size() == 5;
 } 
+
+void Player::setCarrier() {
+    Carrier* carrier = new Carrier(this->grid);
+}

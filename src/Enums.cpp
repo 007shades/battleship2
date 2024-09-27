@@ -6,6 +6,13 @@
 
 #include "Enums.h"
 
+bool Spaces::isSpaceString(string space_string) {
+    for(string a_space_string : spaceStrings)
+        if(space_string == a_space_string)
+            return true;
+    return false;
+}
+
 SpaceName Spaces::nameFromString(string space_string) {
     for (size_t i = 0; i < 100; i ++) {
         if (spaceStrings[i] == space_string)
