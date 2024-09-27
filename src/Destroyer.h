@@ -20,6 +20,7 @@ class Destroyer : public Ship {
         Destroyer();
         explicit Destroyer(PlayerType of_player);
         explicit Destroyer(Grid* on_grid);
+        Destroyer(Grid* on_grid, string start_space, char direction);
         ~Destroyer();
         array<Stud*, 3> getStuds() const;
         Stud* getStud(StudName stud_name) const;

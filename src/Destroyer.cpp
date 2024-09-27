@@ -24,6 +24,13 @@ Destroyer::Destroyer(PlayerType of_player) : Ship(ShipType::DESTROYER, of_player
 
 Destroyer::Destroyer(Grid* on_grid) : Ship(ShipType::DESTROYER, on_grid) {}
 
+Destroyer::Destroyer(Grid* on_grid, string start_space, char direction) : Ship (ShipType::BATTLESHIP, on_grid)
+{
+    this->setStuds();
+    this->isReady = this->placeOnGrid(start_space, direction);
+}
+
+
 Destroyer::~Destroyer() {
     for(size_t i = 0; i < 3; ++i) {
         delete this->studs[i];

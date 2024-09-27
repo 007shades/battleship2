@@ -20,6 +20,7 @@ class Carrier : public Ship {
         Carrier();
         explicit Carrier(PlayerType of_player);
         explicit Carrier(Grid* on_grid);
+        Carrier(Grid* on_grid, string start_space, char direction);
         ~Carrier();
         array<Stud*, 5> getStuds() const;
         Stud* getStud(StudName stud_name) const;

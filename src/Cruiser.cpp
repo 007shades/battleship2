@@ -24,6 +24,13 @@ Cruiser::Cruiser(PlayerType of_player) : Ship(ShipType::CRUISER, of_player) {}
 
 Cruiser::Cruiser(Grid* on_grid) : Ship(ShipType::CRUISER, on_grid) {}
 
+Cruiser::Cruiser(Grid* on_grid, string start_space, char direction) : Ship (ShipType::BATTLESHIP, on_grid)
+{
+    this->setStuds();
+    this->isReady = this->placeOnGrid(start_space, direction);
+}
+
+
 Cruiser::~Cruiser() {
     for(size_t i = 0; i < 2; ++i) {
         delete this->studs[i];

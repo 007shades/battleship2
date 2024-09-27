@@ -24,6 +24,13 @@ Carrier::Carrier(PlayerType of_player) : Ship(ShipType::CARRIER, of_player) {}
 
 Carrier::Carrier(Grid* on_grid) : Ship(ShipType::CARRIER, on_grid) {}
 
+Carrier::Carrier(Grid* on_grid, string start_space, char direction) : Ship (ShipType::BATTLESHIP, on_grid)
+{
+    this->setStuds();
+    this->isReady = this->placeOnGrid(start_space, direction);
+}
+
+
 Carrier::~Carrier() {
     for(size_t i = 0; i < 5; ++i) {
         delete this->studs[i];

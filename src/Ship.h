@@ -37,11 +37,13 @@ class Ship {
         ShipType getShipType() const;
         ShipStatus getShipStatus() const;
         bool getIsOnGrid() const;
+        bool getIsReady() const;
         void setOfPlayer(PlayerType of_player);
         void setGrid(Grid* on_grid);
         void setShipType(ShipType ship_type);
         void setShipStatus(ShipStatus ship_status);
         void setIsOnGrid(bool is_on_grid);
+        void setIsReady(bool is_ready);
         bool studIsIntact(Stud* stud) const;
         virtual void setStuds() = 0;
         virtual bool hasStud(Stud* stud) const = 0;

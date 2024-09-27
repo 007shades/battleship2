@@ -24,6 +24,12 @@ Submarine::Submarine(PlayerType of_player) : Ship(ShipType::SUBMARINE, of_player
 
 Submarine::Submarine(Grid* on_grid) : Ship(ShipType::SUBMARINE, on_grid) {}
 
+Submarine::Submarine(Grid* on_grid, string start_space, char direction) : Ship (ShipType::BATTLESHIP, on_grid)
+{
+    this->setStuds();
+    this->isReady = this->placeOnGrid(start_space, direction);
+}
+
 Submarine::~Submarine() {
     for(size_t i = 0; i < 3; ++i) {
         delete this->studs[i];

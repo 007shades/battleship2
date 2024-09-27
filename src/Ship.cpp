@@ -56,6 +56,10 @@ bool Ship::getIsOnGrid() const {
     return this->isOnGrid;
 }
 
+bool Ship::getIsReady() const {
+    return this->isReady;
+}
+
 void Ship::setOfPlayer(PlayerType of_player) {
     this->ofPlayer = of_player;
 }
@@ -74,6 +78,10 @@ void Ship::setShipStatus(ShipStatus ship_status) {
 
 void Ship::setIsOnGrid(bool is_on_grid) {
     this->isOnGrid = is_on_grid;
+}
+
+void Ship::setIsReady(bool is_ready) {
+    this->isReady = is_ready;
 }
 
 bool Ship::studIsIntact(Stud* stud) const {

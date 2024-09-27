@@ -20,6 +20,7 @@ class Cruiser : public Ship {
         Cruiser();
         explicit Cruiser(PlayerType of_player);
         explicit Cruiser(Grid* on_grid);
+        Cruiser(Grid* on_grid, string start_space, char direction);
         ~Cruiser();
         array<Stud*, 2> getStuds() const;
         Stud* getStud(StudName stud_name) const;
