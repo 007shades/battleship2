@@ -25,6 +25,7 @@
 
 #include <stdexcept>
     using std::domain_error;
+    using std::out_of_range;
 
 #include <unistd.h> //Sleep function
 
@@ -422,6 +423,11 @@ void Player::autoPutShip(Ship* ship, int(*rand_func)()) {
         char direction = directions[static_cast<size_t>(rand_func() % 4)];
         ship->setIsReady(ship->placeOnGrid(start_space, direction, false));
     }
+    this->ships[static_cast<size_t>(ship->getShipType())-1] = ship;
+    this->floatingShips.push_back(ship);
+    for(SpaceName space_name : this->grid->getNoGoSpaces())
+        cout << Spaces::stringFromName(space_name) << " ";
+    cout << "" << endl;
 }
 
 void Player::autoSetShip(char ship_char, int(*rand_func)()) {
@@ -454,4 +460,19 @@ void Player::autoSetShips(int(*rand_func)()) {
     this->autoSetShip('D', rand_func);
     this->autoSetShip('S', rand_func);
     this->autoSetShip('C', rand_func);
+}
+
+void Player::askToSetShips(int(*rand_func)()) {
+    char response;
+    cout << "Auto set ships ? (y/n) > ";
+    cin.get(response);
+    while (!(response == 'y' && response == 'n')) {
+        cout << "Invalid response. Please enter y or n." << endl;
+        cout << "Auto set ships (y/n) > ";
+        cin.get(response);
+    }
+    if(response == 'y')
+        this->autoSetShips(rand_func);
+    else
+        this->manuallySetShips();
 }

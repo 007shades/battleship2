@@ -215,10 +215,10 @@ vector<string> Grid::neighborSpaces(vector<string> space_strings) {
     vector<string> neighbors;
     if(space_strings.size() == 1)
         return neighborSpaces(space_strings[0]);
-    for(size_t i = 0; i < space_strings.size(); ++i) {
+    for(size_t i = 0; i < space_strings.size(); i++) {
         vector<string> neighbor_spaces = neighborSpaces(space_strings[i]);
-        if(!i || i == (space_strings.size() - 1)) {
-            if(!i)
+        if(i==0 || i == (space_strings.size())) {
+            if(i==0)
                 for(string neighbor_space : neighbor_spaces)
                     if(neighbor_space != space_strings[1])
                         neighbors.push_back(neighbor_space);

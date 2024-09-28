@@ -51,7 +51,7 @@ class Grid {
         static string E(string start);
         static string W(string start);
         static string goDirection(string start, char direction);
-        static vector<string> getVector(string start, char direction, int length, bool include_first = true);
+        static vector<string> getVector(string start, char direction, int length, bool include_start = true);
         
         static vector<string> neighborSpaces(string space_string);
         static vector<string> neighborSpaces(vector<string> space_strings);

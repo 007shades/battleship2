@@ -4,6 +4,11 @@
 #include "Enums.h"
 #include "Ship.h"
 #include "Grid.h"
+#include "Carrier.h"
+#include "Battleship.h"
+#include "Destroyer.h"
+#include "Submarine.h"
+#include "Cruiser.h"
 
 #include <array>
     using std::array;
@@ -79,9 +84,12 @@ class Player {
         void setSubmarine();
         void setCruiser();
         void manuallySetShips();
+        
         void autoPutShip(Ship* ship, int(*rand_func)());
         void autoSetShip(char ship_char, int(*rand_func)());
         void autoSetShips(int(*rand_func)());
+
+        void askToSetShips(int(*rand_func)());
 };
 
 #endif
