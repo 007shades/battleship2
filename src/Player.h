@@ -79,6 +79,9 @@ class Player {
         void setSubmarine();
         void setCruiser();
         void manuallySetShips();
+        void autoPutShip(Ship* ship, int(*rand_func)());
+        void autoSetShip(char ship_char, int(*rand_func)());
+        void autoSetShips(int(*rand_func)());
 };
 
 #endif

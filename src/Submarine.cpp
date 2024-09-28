@@ -65,16 +65,18 @@ void Submarine::setStuds() {
     }
 }
 
-bool Submarine::placeOnGrid(string start_space, char direction) const {
+bool Submarine::placeOnGrid(string start_space, char direction, bool print_out) const {
     vector<string> ship_spaces;
     try {
-        ship_spaces = Grid::getVector(start_space, direction, 3);
+        ship_spaces = Grid::getVector(start_space, direction, 2);
     } catch (out_of_range& e) {
-        cout << "Out of range." << endl;
+        if(print_out)
+            cout << "Out of range." << endl;
         return false;
     }
     if(this->onGrid->hasNoGoSpace(ship_spaces)) {
-        cout << "Ships cannot be touching." << endl;
+        if(print_out)
+            cout << "Ships cannot be touching." << endl;
         return false;
     }
     for(size_t i = 0; i < 3; i++)

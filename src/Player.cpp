@@ -35,12 +35,17 @@ Player::Player(PlayerType player_type) : type {player_type}
     if (player_type == CPU) {
         this->name = "Camden";
     }
+    this->grid = new Grid(player_type);
 }
 
-Player::Player(PlayerType player_type, string player_name) : type {player_type}, name {player_name} {}
+Player::Player(PlayerType player_type, string player_name) : type {player_type}, name {player_name} 
+{
+    this->grid = new Grid(player_type);
+}
 
 Player::Player(PlayerType player_type, string player_name, Player* the_foe) : type {player_type}, name {player_name} 
 {
+    this->grid = new Grid(player_type);
     this->makeFoe(the_foe);
 }
 
@@ -190,7 +195,7 @@ bool Player::spaceWasTargeted(string space) const {
     for(string the_space : this->targetedSpaces)
         if(space == the_space)
             return true;
-        
+    return false;
 }
 
 bool Player::target(string space) {
@@ -257,21 +262,17 @@ void Player::setCarrier() {
         char direction;
         cout << "Enter Carrier Start Space: ";
         cin >> start_space;
-        cout << "" << endl;
         while(!Spaces::isSpaceString(start_space)) {
             cout << "Invalid Space." << endl;
             cout << "Enter Carrier Start Space: ";
             cin >> start_space;
-            cout << "" << endl;
         }
         cout << "Enter Carrier Direction: ";
         cin >> direction;
-        cout << "" << endl;
-        while (direction != 'N' || direction != 'S' || direction != 'E' || direction != 'W') {
+        while (!(direction == 'N' || direction == 'S' || direction == 'E' || direction == 'W')) {
             cout << "Invalid Direction." << endl;
             cout << "Enter Carrier Direction: ";
             cin >> direction;
-            cout << "" << endl;
         }
         carrier->setIsReady(carrier->placeOnGrid(start_space, direction));
     } while (!carrier->getIsReady());
@@ -289,7 +290,6 @@ void Player::setBattleship() {
         char direction;
         cout << "Enter Battleship Start Space: ";
         cin >> start_space;
-        cout << "" << endl;
         while(!Spaces::isSpaceString(start_space) || this->grid->isNoGoSpace(start_space)) {
             if(!Spaces::isSpaceString(start_space))
                 cout << "Invalid Space." << endl;
@@ -297,16 +297,13 @@ void Player::setBattleship() {
                 cout << "Space is occupied by or adjacent to an existing Ship. Please choose another space." << endl;
             cout << "Enter Battleship Start Space: ";
             cin >> start_space;
-            cout << "" << endl;
         }
         cout << "Enter Battleship Direction: ";
         cin >> direction;
-        cout << "" << endl;
-        while (direction != 'N' || direction != 'S' || direction != 'E' || direction != 'W') {
+        while (!(direction == 'N' || direction == 'S' || direction == 'E' || direction == 'W')) {
             cout << "Invalid Direction." << endl;
             cout << "Enter Battleship Direction: ";
             cin >> direction;
-            cout << "" << endl;
         }
         battleship->setIsReady(battleship->placeOnGrid(start_space, direction));
     } while (!battleship->getIsReady());
@@ -324,7 +321,6 @@ void Player::setDestroyer() {
         char direction;
         cout << "Enter Destroyer Start Space: ";
         cin >> start_space;
-        cout << "" << endl;
         while(!Spaces::isSpaceString(start_space) || this->grid->isNoGoSpace(start_space)) {
             if(!Spaces::isSpaceString(start_space))
                 cout << "Invalid Space." << endl;
@@ -332,16 +328,13 @@ void Player::setDestroyer() {
                 cout << "Space is occupied by or adjacent to an existing Ship. Please choose another space." << endl;
             cout << "Enter Destroyer Start Space: ";
             cin >> start_space;
-            cout << "" << endl;
         }
         cout << "Enter Destroyer Direction: ";
         cin >> direction;
-        cout << "" << endl;
-        while (direction != 'N' || direction != 'S' || direction != 'E' || direction != 'W') {
+        while (!(direction == 'N' || direction == 'S' || direction == 'E' || direction == 'W')) {
             cout << "Invalid Direction." << endl;
             cout << "Enter Destroyer Direction: ";
             cin >> direction;
-            cout << "" << endl;
         }
         destroyer->setIsReady(destroyer->placeOnGrid(start_space, direction));
     } while (!destroyer->getIsReady());
@@ -359,7 +352,6 @@ void Player::setSubmarine() {
         char direction;
         cout << "Enter Submarine Start Space: ";
         cin >> start_space;
-        cout << "" << endl;
         while(!Spaces::isSpaceString(start_space) || this->grid->isNoGoSpace(start_space)) {
             if(!Spaces::isSpaceString(start_space))
                 cout << "Invalid Space." << endl;
@@ -367,16 +359,13 @@ void Player::setSubmarine() {
                 cout << "Space is occupied by or adjacent to an existing Ship. Please choose another space." << endl;
             cout << "Enter Submarine Start Space: ";
             cin >> start_space;
-            cout << "" << endl;
         }
         cout << "Enter Submarine Direction: ";
         cin >> direction;
-        cout << "" << endl;
-        while (direction != 'N' || direction != 'S' || direction != 'E' || direction != 'W') {
+        while (!(direction == 'N' || direction == 'S' || direction == 'E' || direction == 'W')) {
             cout << "Invalid Direction." << endl;
             cout << "Enter Submarine Direction: ";
             cin >> direction;
-            cout << "" << endl;
         }
         submarine->setIsReady(submarine->placeOnGrid(start_space, direction));
     } while (!submarine->getIsReady());
@@ -394,7 +383,6 @@ void Player::setCruiser() {
         char direction;
         cout << "Enter Cruiser Start Space: ";
         cin >> start_space;
-        cout << "" << endl;
         while(!Spaces::isSpaceString(start_space) || this->grid->isNoGoSpace(start_space)) {
             if(!Spaces::isSpaceString(start_space))
                 cout << "Invalid Space." << endl;
@@ -402,16 +390,13 @@ void Player::setCruiser() {
                 cout << "Space is occupied by or adjacent to an existing Ship. Please choose another space." << endl;
             cout << "Enter Cruiser Start Space: ";
             cin >> start_space;
-            cout << "" << endl;
         }
         cout << "Enter Cruiser Direction: ";
         cin >> direction;
-        cout << "" << endl;
-        while (direction != 'N' || direction != 'S' || direction != 'E' || direction != 'W') {
+        while (!(direction == 'N' || direction == 'S' || direction == 'E' || direction == 'W')) {
             cout << "Invalid Direction." << endl;
             cout << "Enter Cruiser Direction: ";
             cin >> direction;
-            cout << "" << endl;
         }
         cruiser->setIsReady(cruiser->placeOnGrid(start_space, direction));
     } while (!cruiser->getIsReady());
@@ -430,3 +415,43 @@ void Player::manuallySetShips() {
     this->setCruiser();
 }
 
+void Player::autoPutShip(Ship* ship, int(*rand_func)()) {
+    char directions[] = {'N','S','E','W'};
+    while(!ship->getIsReady()){
+        string start_space = Spaces::spaceStrings[static_cast<size_t>(rand_func() % 100)];
+        char direction = directions[static_cast<size_t>(rand_func() % 4)];
+        ship->setIsReady(ship->placeOnGrid(start_space, direction, false));
+    }
+}
+
+void Player::autoSetShip(char ship_char, int(*rand_func)()) {
+    switch (ship_char) {
+        case 'A': {
+            this->autoPutShip(new Carrier(this->grid), rand_func);
+            break;
+        }
+        case 'B': {
+            this->autoPutShip(new Battleship(this->grid), rand_func);
+            break;
+        }
+        case 'C': {
+            this->autoPutShip(new Cruiser(this->grid), rand_func);
+            break;
+        }
+        case 'D': {
+            this->autoPutShip(new Destroyer(this->grid), rand_func);
+            break;
+        }
+        case 'S': {
+            this->autoPutShip(new Submarine(this->grid), rand_func);
+        }
+    }
+}
+
+void Player::autoSetShips(int(*rand_func)()) {
+    this->autoSetShip('A', rand_func);
+    this->autoSetShip('B', rand_func);
+    this->autoSetShip('D', rand_func);
+    this->autoSetShip('S', rand_func);
+    this->autoSetShip('C', rand_func);
+}

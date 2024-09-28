@@ -26,7 +26,7 @@ class Carrier : public Ship {
         Stud* getStud(StudName stud_name) const;
         bool hasStud(Stud* stud) const override;
         void setStuds() override;
-        bool placeOnGrid(string start_space, char direction) const override;
+        bool placeOnGrid(string start_space, char direction, bool print_out = true) const override;
 
 };
 

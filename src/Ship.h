@@ -51,7 +51,7 @@ class Ship {
         bool wasSunk() const;
         virtual void setStuds() = 0;
         virtual bool hasStud(Stud* stud) const = 0;
-        virtual bool placeOnGrid(string start_space, char direction) const = 0;
+        virtual bool placeOnGrid(string start_space, char direction, bool print_out = true) const = 0;
         void destroyStud(Stud* stud);
 
 };
