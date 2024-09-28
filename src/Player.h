@@ -74,8 +74,11 @@ class Player {
         bool allShipsAreSunk() const;
 
         void setCarrier();
-        
-
+        void setBattleship();
+        void setDestroyer();
+        void setSubmarine();
+        void setCruiser();
+        void manuallySetShips();
 };
 
 #endif

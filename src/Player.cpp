@@ -252,4 +252,173 @@ bool Player::allShipsAreSunk() const {
 
 void Player::setCarrier() {
     Carrier* carrier = new Carrier(this->grid);
+    do {
+        string start_space;
+        char direction;
+        cout << "Enter Carrier Start Space: ";
+        cin >> start_space;
+        cout << "" << endl;
+        while(!Spaces::isSpaceString(start_space)) {
+            cout << "Invalid Space." << endl;
+            cout << "Enter Carrier Start Space: ";
+            cin >> start_space;
+            cout << "" << endl;
+        }
+        cout << "Enter Carrier Direction: ";
+        cin >> direction;
+        cout << "" << endl;
+        while (direction != 'N' || direction != 'S' || direction != 'E' || direction != 'W') {
+            cout << "Invalid Direction." << endl;
+            cout << "Enter Carrier Direction: ";
+            cin >> direction;
+            cout << "" << endl;
+        }
+        carrier->setIsReady(carrier->placeOnGrid(start_space, direction));
+    } while (!carrier->getIsReady());
+    this->ships[0] = carrier;
+    this->floatingShips.push_back(carrier);
+    cout << "" << endl;
+    this->grid->showGrid();
+    cout << "" << endl;
 }
+
+void Player::setBattleship() {
+    Battleship* battleship = new Battleship(this->grid);
+    do {
+        string start_space;
+        char direction;
+        cout << "Enter Battleship Start Space: ";
+        cin >> start_space;
+        cout << "" << endl;
+        while(!Spaces::isSpaceString(start_space) || this->grid->isNoGoSpace(start_space)) {
+            if(!Spaces::isSpaceString(start_space))
+                cout << "Invalid Space." << endl;
+            else
+                cout << "Space is occupied by or adjacent to an existing Ship. Please choose another space." << endl;
+            cout << "Enter Battleship Start Space: ";
+            cin >> start_space;
+            cout << "" << endl;
+        }
+        cout << "Enter Battleship Direction: ";
+        cin >> direction;
+        cout << "" << endl;
+        while (direction != 'N' || direction != 'S' || direction != 'E' || direction != 'W') {
+            cout << "Invalid Direction." << endl;
+            cout << "Enter Battleship Direction: ";
+            cin >> direction;
+            cout << "" << endl;
+        }
+        battleship->setIsReady(battleship->placeOnGrid(start_space, direction));
+    } while (!battleship->getIsReady());
+    this->ships[1] = battleship;
+    this->floatingShips.push_back(battleship);
+    cout << "" << endl;
+    this->grid->showGrid();
+    cout << "" << endl;
+}
+
+void Player::setDestroyer() {
+    Destroyer* destroyer = new Destroyer(this->grid);
+    do {
+        string start_space;
+        char direction;
+        cout << "Enter Destroyer Start Space: ";
+        cin >> start_space;
+        cout << "" << endl;
+        while(!Spaces::isSpaceString(start_space) || this->grid->isNoGoSpace(start_space)) {
+            if(!Spaces::isSpaceString(start_space))
+                cout << "Invalid Space." << endl;
+            else
+                cout << "Space is occupied by or adjacent to an existing Ship. Please choose another space." << endl;
+            cout << "Enter Destroyer Start Space: ";
+            cin >> start_space;
+            cout << "" << endl;
+        }
+        cout << "Enter Destroyer Direction: ";
+        cin >> direction;
+        cout << "" << endl;
+        while (direction != 'N' || direction != 'S' || direction != 'E' || direction != 'W') {
+            cout << "Invalid Direction." << endl;
+            cout << "Enter Destroyer Direction: ";
+            cin >> direction;
+            cout << "" << endl;
+        }
+        destroyer->setIsReady(destroyer->placeOnGrid(start_space, direction));
+    } while (!destroyer->getIsReady());
+    this->ships[2] = destroyer;
+    this->floatingShips.push_back(destroyer);
+    cout << "" << endl;
+    this->grid->showGrid();
+    cout << "" << endl;
+}
+
+void Player::setSubmarine() {
+    Submarine* submarine = new Submarine(this->grid);
+    do {
+        string start_space;
+        char direction;
+        cout << "Enter Submarine Start Space: ";
+        cin >> start_space;
+        cout << "" << endl;
+        while(!Spaces::isSpaceString(start_space) || this->grid->isNoGoSpace(start_space)) {
+            if(!Spaces::isSpaceString(start_space))
+                cout << "Invalid Space." << endl;
+            else
+                cout << "Space is occupied by or adjacent to an existing Ship. Please choose another space." << endl;
+            cout << "Enter Submarine Start Space: ";
+            cin >> start_space;
+            cout << "" << endl;
+        }
+        cout << "Enter Submarine Direction: ";
+        cin >> direction;
+        cout << "" << endl;
+        while (direction != 'N' || direction != 'S' || direction != 'E' || direction != 'W') {
+            cout << "Invalid Direction." << endl;
+            cout << "Enter Submarine Direction: ";
+            cin >> direction;
+            cout << "" << endl;
+        }
+        submarine->setIsReady(submarine->placeOnGrid(start_space, direction));
+    } while (!submarine->getIsReady());
+    this->ships[3] = submarine;
+    this->floatingShips.push_back(submarine);
+    cout << "" << endl;
+    this->grid->showGrid();
+    cout << "" << endl;
+}
+
+void Player::setCruiser() {
+    Cruiser* cruiser = new Cruiser(this->grid);
+    do {
+        string start_space;
+        char direction;
+        cout << "Enter Cruiser Start Space: ";
+        cin >> start_space;
+        cout << "" << endl;
+        while(!Spaces::isSpaceString(start_space) || this->grid->isNoGoSpace(start_space)) {
+            if(!Spaces::isSpaceString(start_space))
+                cout << "Invalid Space." << endl;
+            else
+                cout << "Space is occupied by or adjacent to an existing Ship. Please choose another space." << endl;
+            cout << "Enter Cruiser Start Space: ";
+            cin >> start_space;
+            cout << "" << endl;
+        }
+        cout << "Enter Cruiser Direction: ";
+        cin >> direction;
+        cout << "" << endl;
+        while (direction != 'N' || direction != 'S' || direction != 'E' || direction != 'W') {
+            cout << "Invalid Direction." << endl;
+            cout << "Enter Cruiser Direction: ";
+            cin >> direction;
+            cout << "" << endl;
+        }
+        cruiser->setIsReady(cruiser->placeOnGrid(start_space, direction));
+    } while (!cruiser->getIsReady());
+    this->ships[4] = cruiser;
+    this->floatingShips.push_back(cruiser);
+    cout << "" << endl;
+    this->grid->showGrid();
+    cout << "" << endl;
+}
+

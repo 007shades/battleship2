@@ -145,4 +145,3 @@ void Ship::destroyStud(Stud* stud) {
     }
     this->destroyedStuds.push_back(stud);
 }
-
