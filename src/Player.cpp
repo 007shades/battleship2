@@ -422,3 +422,11 @@ void Player::setCruiser() {
     cout << "" << endl;
 }
 
+void Player::manuallySetShips() {
+    this->setCarrier();
+    this->setBattleship();
+    this->setDestroyer();
+    this->setSubmarine();
+    this->setCruiser();
+}
+
