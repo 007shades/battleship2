@@ -19,6 +19,7 @@ class GridSpace {
         Stud* stud {nullptr};
         string spaceString;
         char label {'+'};
+        char primeLabel {'+'};
         char letter;
         char number;
         void set_space_data(SpaceName space_name);
@@ -41,6 +42,7 @@ class GridSpace {
         char getLetter() const;
         char getNumber() const;
         char getLabel() const;
+        char getPrimeLabel() const;
         
         void setSpaceName(SpaceName space_name);
         void setOfPlayer(PlayerType of_player);

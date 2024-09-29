@@ -60,7 +60,7 @@ class Grid {
         
         TargetResult target(string space_string) const;
 
-        void showGrid() const;
+        void showGrid(bool show_camden = false) const;
 };
 
 #endif

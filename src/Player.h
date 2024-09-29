@@ -90,6 +90,7 @@ class Player {
         void autoSetShips(int(*rand_func)());
 
         void askToSetShips(int(*rand_func)());
+        void doTurn();
 };
 
 #endif

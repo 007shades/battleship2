@@ -88,6 +88,10 @@ char GridSpace::getLabel() const {
     return this->label;
 }
 
+char GridSpace::getPrimeLabel() const {
+    return this->primeLabel;
+}
+
 void GridSpace::setSpaceName(SpaceName space_name) {
     this->spaceName = space_name;
     this->set_space_data(space_name);
@@ -114,6 +118,7 @@ void GridSpace::addStud(Stud* the_stud) {
         throw invalid_argument("Space already occupied.");
     this->stud = the_stud;
     this->label = the_stud->getLabel();
+    this->primeLabel = the_stud->getLabel();
 }
 
 bool GridSpace::hasStud() const {
@@ -125,8 +130,12 @@ bool GridSpace::wasTargeted() const {
 }
 
 void GridSpace::modifyLabel() {
-    if(this->ofPlayer == PlayerType::CPU)
+    if(this->ofPlayer == PlayerType::CPU){
         this->label = this->ofPlayer == this->hasStud() ? 'H' : 'M';
+        if(this->hasStud())
+            this->primeLabel = this->stud->getLabel();
+        else this->primeLabel = '@';
+    }
     else {
         if(this->hasStud())
             this->label = this->stud->getLabel();

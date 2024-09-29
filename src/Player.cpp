@@ -27,7 +27,7 @@
     using std::domain_error;
     using std::out_of_range;
 
-#include <unistd.h> //Sleep function
+
 
 Player::Player() {};
 
@@ -203,7 +203,7 @@ bool Player::target(string space) {
     if(this->foeGrid == nullptr)
         throw domain_error("Foe grid not set.");
     if(!Spaces::isSpaceString(space)) {
-        cout << "Invalid space / command." << endl;
+        cout << "Invalid entry." << endl;
         return false;
     }
     if(this->spaceWasTargeted(space)) {
@@ -475,4 +475,14 @@ void Player::askToSetShips(int(*rand_func)()) {
         this->autoSetShips(rand_func);
     else
         this->manuallySetShips();
+}
+
+void Player::doTurn() {
+    bool input_result;
+    do {
+        string user_input;
+        cout << "> ";
+        cin >> user_input;
+        input_result = this->processInput(user_input);
+    } while(!input_result);
 }

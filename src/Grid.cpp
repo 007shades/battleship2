@@ -244,7 +244,7 @@ TargetResult Grid::target(string space_string) const {
     return this->getSpace(space_string)->target();
 }
 
-void Grid::showGrid() const {
+void Grid::showGrid(bool show_camden) const {
     cout << "      A B C D E F G H I J\n";
     cout << "" << endl;
     for(int i = 0; i < 10; i++) {
@@ -254,7 +254,9 @@ void Grid::showGrid() const {
             cout << " " << (i + 1);
         cout << "    ";
         for(int j = 0; j < 10; j++)
-            cout << this->getSpace(i + 1, j + 1)->getLabel() << " ";
+            if(show_camden && this->ofPlayer == CPU)
+                cout << this->getSpace(i + 1, j + 1)->getPrimeLabel() << " ";
+            else cout << this->getSpace(i + 1, j + 1)->getLabel() << " ";
         cout << "\n";
     }
 }
