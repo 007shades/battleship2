@@ -131,7 +131,7 @@ void Game::doCoinToss(int(*rand_func)()) {
     cout << "" << endl;
     cout << "Coin toss! Winner goes first. Heads or Tails?" << endl;
     cout << "(H / h or T / t) > ";
-    cin.get(user_coin_choice);
+    cin >> user_coin_choice;
     int coin_toss = rand_func() % 2;
     if (!coin_toss){
         if(user_coin_choice == 'H' || user_coin_choice == 'h') {

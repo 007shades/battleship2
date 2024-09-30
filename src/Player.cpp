@@ -425,9 +425,6 @@ void Player::autoPutShip(Ship* ship, int(*rand_func)()) {
     }
     this->ships[static_cast<size_t>(ship->getShipType())-1] = ship;
     this->floatingShips.push_back(ship);
-    for(SpaceName space_name : this->grid->getNoGoSpaces())
-        cout << Spaces::stringFromName(space_name) << " ";
-    cout << "" << endl;
 }
 
 void Player::autoSetShip(char ship_char, int(*rand_func)()) {
@@ -465,11 +462,11 @@ void Player::autoSetShips(int(*rand_func)()) {
 void Player::askToSetShips(int(*rand_func)()) {
     char response;
     cout << "Auto set ships ? (y/n) > ";
-    cin.get(response);
-    while (!(response == 'y' && response == 'n')) {
+    cin >> response;
+    while (!(response == 'y' || response == 'n')) {
         cout << "Invalid response. Please enter y or n." << endl;
         cout << "Auto set ships (y/n) > ";
-        cin.get(response);
+        cin >> response;
     }
     if(response == 'y')
         this->autoSetShips(rand_func);

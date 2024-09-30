@@ -14,6 +14,10 @@
     using std::out_of_range;
     using std::logic_error;
 
+#include <iostream>
+    using std::cout;
+    using std::cin;
+
 
 bool Camden::did_just_sink_ship() const {
     return this->numShipsSank[this->numShipsSank.size() - 1] != this->numShipsSank[this->numShipsSank.size() - 2];
@@ -197,6 +201,7 @@ Camden::Camden() {}
 Camden::Camden(Player* the_self) : self{the_self}
 {
     this->foeGrid = the_self->getFoeGrid();
+    this->set_Camden();
 }
 
 Camden::~Camden() {
