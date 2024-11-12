@@ -117,7 +117,8 @@ void GridSpace::addStud(Stud* the_stud) {
     if(this->hasStud())
         throw invalid_argument("Space already occupied.");
     this->stud = the_stud;
-    this->label = the_stud->getLabel();
+    if(this->ofPlayer == MAN)
+        this->label = the_stud->getLabel();
     this->primeLabel = the_stud->getLabel();
 }
 
@@ -131,7 +132,7 @@ bool GridSpace::wasTargeted() const {
 
 void GridSpace::modifyLabel() {
     if(this->ofPlayer == PlayerType::CPU){
-        this->label = this->ofPlayer == this->hasStud() ? 'H' : 'M';
+        this->label = this->hasStud() ? 'H' : 'M';
         if(this->hasStud())
             this->primeLabel = this->stud->getLabel();
         else this->primeLabel = '@';
@@ -145,14 +146,16 @@ void GridSpace::modifyLabel() {
 
 TargetResult GridSpace::target() {
     if(this->wasTargeted())
-        throw out_of_range("Space already targeted.");
-    this->status = SpaceStatus::TARGETED;
-    if(this->hasStud()) {
-        this->stud->hit();
-        this->modifyLabel();
-        return TargetResult::HIT;
-    } else {
-        this->modifyLabel(); 
-        return TargetResult::MISS;
+        throw invalid_argument("Space already targeted.");
+    else {
+        this->status = SpaceStatus::TARGETED;
+        if(this->hasStud()) {
+            this->stud->hit();
+            this->modifyLabel();
+            return TargetResult::HIT;
+        } else {
+            this->modifyLabel(); 
+            return TargetResult::MISS;
+        }
     }
 }

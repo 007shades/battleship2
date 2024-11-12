@@ -21,14 +21,13 @@ Game::Game() {}
 
 Game::Game(string human_name) {
     this->cpu = new Player(CPU);
-    this->human = new Player(MAN, human_name, this->cpu);
-    this->cpu->makeFoe(this->human);
-    this->camden = new Camden(this->cpu);
+    this->human = new Player(MAN, human_name);
 }
 
 Game::Game(string human_name, int(*rand_func)()) : Game(human_name) {
     this->doSetUp(rand_func);
     this->doCoinToss(rand_func);
+    this->doFinalSetup();
     this->playGame(rand_func);
 }
 
@@ -98,10 +97,14 @@ void Game::switchTurn() {
 }
 
 void Game::doCpuTurn(int(*rand_func)()) const {
-    string camden_space = this->camden->makeMove(rand_func);
-    cout << camden_space << endl;
-    if ( ! ( this->cpu->target( camden_space ) ) )
-        throw logic_error("Whoops! Something went wrong. (Camden\'s choice: " + camden_space + ")");
+    string bad_space = "NA";
+    bool good_space_chosen = false;
+    string camden_space;
+    do {
+        camden_space = this->camden->makeMove(rand_func, bad_space);
+        good_space_chosen = this->cpu->target(camden_space, false);
+        if(!good_space_chosen)bad_space = camden_space;
+    } while (!good_space_chosen);
 }
 
 void Game::doHumanTurn() const {
@@ -120,7 +123,7 @@ void Game::doTurn(int(*rand_func)()) {
 
 void Game::doSetUp(int(*rand_func)()) {
     this->human->askToSetShips(rand_func);
-    cout << "\nCamden is setting his ships...";
+    cout << "\nCamden is setting his ships..." << endl;
     this->cpu->autoSetShips(rand_func);
     sleep(1);
     cout << "   Done." << endl;
@@ -154,6 +157,12 @@ void Game::doCoinToss(int(*rand_func)()) {
     cout << "Loading Game..." << endl;
     sleep(1);
     cout << "" << endl;
+}
+
+void Game::doFinalSetup() {
+    this->human->makeFoe(this->cpu);
+    this->cpu->makeFoe(this->human);
+    this->camden = new Camden(this->cpu);
 }
 
 void Game::playGame(int(*rand_func)()){

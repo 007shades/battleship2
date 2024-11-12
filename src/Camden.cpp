@@ -17,10 +17,19 @@
 #include <iostream>
     using std::cout;
     using std::cin;
+    using std::endl;
 
+
+bool Camden::did_just_sink_ship_check1() const {
+    return this->numShipsSank[this->numShipsSank.size() - 1] != this->numShipsSank[this->numShipsSank.size() - 2];
+}
+
+bool Camden::did_just_sink_ship_check2() const {
+    return this->curVictimShip->wasSunk() && ! this->hasSunkShip;
+}
 
 bool Camden::did_just_sink_ship() const {
-    return this->numShipsSank[this->numShipsSank.size() - 1] != this->numShipsSank[this->numShipsSank.size() - 2];
+    return this->did_just_sink_ship_check1() || this->did_just_sink_ship_check2();
 }
 
 bool Camden::space_is_available(string space) const {
@@ -33,17 +42,6 @@ bool Camden::space_is_available(string space) const {
 void Camden::set_Camden() {
     for(string space : Spaces::spaceStrings)
         this->availableSpaces.push_back(space);
-    for(char direction : this->directions)
-        this->attackDirections.push_back(direction);
-}
-
-void Camden::reset_to_default() {
-    this->firstAttackSpace = "";
-    this->lastAttackSpace = "";
-    this->attackDirection = ' ';
-    this->isAttackingShip = false;
-    this->attackSpaces.clear();
-    this->attackDirections.clear();
     for(char direction : this->directions)
         this->attackDirections.push_back(direction);
 }
@@ -68,7 +66,8 @@ void Camden::switch_direction_to_opposite() {
 }
 
 void Camden::update_num_ships_sank() {
-    this->numShipsSank.push_back(static_cast<int>(this->self->getFoe()->getSunkenShips().size()));
+    int num_ships_sank = static_cast<int>(this->self->getFoe()->getSunkenShips().size());
+    this->numShipsSank.push_back(num_ships_sank);
 }
 
 void Camden::check_for_holes() {
@@ -93,6 +92,7 @@ void Camden::check_for_holes() {
 
 void Camden::initiate_attack(string space) {
     this->isAttackingShip = true;
+    this->curVictimShip = this->foeGrid->getSpace(space)->getStud()->getOfShip();
     this->firstAttackSpace = space;
     this->lastAttackSpace = space;
     this->attackSpaces.push_back(space);
@@ -117,6 +117,22 @@ void Camden::remove_available_space(string space) {
 void Camden::remove_available_spaces(vector<string> spaces) {
     for(string space : spaces)
         this->remove_available_space(space);
+}
+
+void Camden::reset_to_default() {
+    this->firstAttackSpace = "";
+    this->lastAttackSpace = "";
+    this->attackDirection = ' ';
+    this->isAttackingShip = false;
+    this->hasSunkShip = false;
+    this->curVictimShip = nullptr;
+    this->remove_available_spaces(this->attackSpaces);
+    this->remove_available_spaces(Grid::neighborSpaces(this->attackSpaces));
+    this->check_for_holes();
+    this->attackSpaces.clear();
+    this->attackDirections.clear();
+    for(char direction : this->directions)
+        this->attackDirections.push_back(direction);
 }
 
 void Camden::do_switch() {
@@ -153,6 +169,10 @@ string Camden::pick_direction(int(*rand_func)(), char& direction) {
 string Camden::pick_attack_space(int(*rand_func)()) {
     string new_space;
     char rand_direction;
+    if(this->did_just_sink_ship()) {
+        this->reset_to_default();
+        return "sunky";
+    }
     if(this->attackSpaces.size() == 1) {
         new_space = this->pick_direction(rand_func, rand_direction);
         if(this->is_a_hit(new_space)){
@@ -177,12 +197,7 @@ string Camden::pick_attack_space(int(*rand_func)()) {
             this->do_switch();
     }
     this->update_num_ships_sank();
-    if(this->did_just_sink_ship()) {
-        this->remove_available_spaces(this->attackSpaces);
-        this->remove_available_spaces(Grid::neighborSpaces(this->attackSpaces));
-        this->check_for_holes();
-        this->reset_to_default();
-    }
+    if(this->did_just_sink_ship())this->reset_to_default();
     return new_space;
 }
 
@@ -209,9 +224,21 @@ Camden::~Camden() {
     this->foeGrid = nullptr;
 }
 
-string Camden::makeMove(int(*rand_func)()) {
-    if(this->isAttackingShip)
-        return this->pick_attack_space(rand_func);
+string Camden::makeAMove(int(*rand_func)()) {
+    if(this->isAttackingShip){
+        string attack_space = this->pick_attack_space(rand_func);
+        if(attack_space == "sunky") return this->pick_random_space(rand_func);
+        else return attack_space;
+    }
     else
         return this->pick_random_space(rand_func);
+}
+
+void Camden::badBoy(string space) {
+    this->remove_available_space(space);
+}
+
+string Camden::makeMove(int(*rand_func)(), string space) {
+    if(!(space == "" || space == "NA")) this->badBoy(space);
+    return this->makeAMove(rand_func);
 }

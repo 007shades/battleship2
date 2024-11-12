@@ -27,7 +27,7 @@ Submarine::Submarine(Grid* on_grid) : Ship(ShipType::SUBMARINE, on_grid)
     this->setStuds();
 }
 
-Submarine::Submarine(Grid* on_grid, string start_space, char direction) : Ship (ShipType::BATTLESHIP, on_grid)
+Submarine::Submarine(Grid* on_grid, string start_space, char direction) : Ship (ShipType::SUBMARINE, on_grid)
 {
     this->setStuds();
     this->isReady = this->placeOnGrid(start_space, direction);

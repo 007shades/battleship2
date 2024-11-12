@@ -27,7 +27,7 @@ Cruiser::Cruiser(Grid* on_grid) : Ship(ShipType::CRUISER, on_grid)
     this->setStuds();
 }
 
-Cruiser::Cruiser(Grid* on_grid, string start_space, char direction) : Ship (ShipType::BATTLESHIP, on_grid)
+Cruiser::Cruiser(Grid* on_grid, string start_space, char direction) : Ship (ShipType::CRUISER, on_grid)
 {
     this->setStuds();
     this->isReady = this->placeOnGrid(start_space, direction);

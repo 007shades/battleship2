@@ -40,9 +40,9 @@ class Player {
         ~Player();
         PlayerType getPlayerType() const;
         string getName() const;
-        Grid* getGrid() const;
+        Grid* getGrid()&;
         Player* getFoe() const;
-        Grid* getFoeGrid() const;
+        Grid* getFoeGrid()&;
         array<Ship*, 5> getShips() const;
         vector<Ship*> getFloatingShips() const;
         vector<Ship*> getSunkenShips() const;
@@ -55,7 +55,7 @@ class Player {
         void setFoe(Player* the_foe);
         void setFoeGrid(Grid* the_grid);
 
-        void makeFoe(Player* the_foe);
+        void makeFoe(Player* &the_foe);
 
         bool hasShip(Ship* ship) const;
         bool shipIsFloating(Ship* ship) const;
@@ -72,7 +72,7 @@ class Player {
 
         bool spaceWasTargeted(string space) const;
         
-        bool target(string space);
+        bool target(string space, bool do_cout = true);
 
         bool processInput(string input);
         

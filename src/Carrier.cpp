@@ -27,7 +27,7 @@ Carrier::Carrier(Grid* on_grid) : Ship(ShipType::CARRIER, on_grid)
     this->setStuds();
 }
 
-Carrier::Carrier(Grid* on_grid, string start_space, char direction) : Ship (ShipType::BATTLESHIP, on_grid)
+Carrier::Carrier(Grid* on_grid, string start_space, char direction) : Ship (ShipType::CARRIER, on_grid)
 {
     this->setStuds();
     this->isReady = this->placeOnGrid(start_space, direction);

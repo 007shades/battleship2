@@ -38,6 +38,7 @@ class Game {
 
         void doSetUp(int(*rand_func)());
         void doCoinToss(int(*rand_func)());
+        void doFinalSetup();
         void playGame(int(*rand_func)());
 
 };

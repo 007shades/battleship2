@@ -27,7 +27,7 @@ Destroyer::Destroyer(Grid* on_grid) : Ship(ShipType::DESTROYER, on_grid)
     this->setStuds();
 }
 
-Destroyer::Destroyer(Grid* on_grid, string start_space, char direction) : Ship (ShipType::BATTLESHIP, on_grid)
+Destroyer::Destroyer(Grid* on_grid, string start_space, char direction) : Ship (ShipType::DESTROYER, on_grid)
 {
     this->setStuds();
     this->isReady = this->placeOnGrid(start_space, direction);

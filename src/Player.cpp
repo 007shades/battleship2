@@ -71,7 +71,7 @@ string Player::getName() const {
     return this->name;
 }
 
-Grid* Player::getGrid() const {
+Grid* Player::getGrid()& {
     return this->grid;
 }
 
@@ -79,7 +79,7 @@ Player* Player::getFoe() const {
     return this->foe;
 }
 
-Grid* Player::getFoeGrid() const {
+Grid* Player::getFoeGrid()& {
     return this->foeGrid;
 }
 
@@ -127,7 +127,7 @@ void Player::setFoeGrid(Grid* the_grid) {
     this->foeGrid = the_grid;
 }
 
-void Player::makeFoe(Player* the_foe) {
+void Player::makeFoe(Player* &the_foe) {
     this->foe = the_foe;
     this->foeGrid = the_foe->getGrid();
 }
@@ -158,21 +158,29 @@ bool Player::shipIsSunken(Ship* ship) const {
 }
 
 void Player::stillFloating() const {
+    cout << "" << endl;
     for(Ship* ship : this->floatingShips)
         cout << ship->getShipName() << endl;
+    cout << "" << endl;
 }
 
 void Player::notSunkYet() const {
+    cout << "" << endl;
     for(Ship* ship : this->foe->getFloatingShips())
         cout << ship->getShipName() << endl;
+    cout << "" << endl;
 }
 
 void Player::showFoe() const {
+    cout << "" << endl;
     this->foeGrid->showGrid();
+    cout << "" << endl;
 }
 
 void Player::showOwn() const {
+    cout << "" << endl;
     this->grid->showGrid();
+    cout << "" << endl;
 }
 
 Ship* Player::justSunkenShip() const {
@@ -183,8 +191,10 @@ Ship* Player::justSunkenShip() const {
 }
 
 void Player::sinkShip(Ship* ship) {
-    if(!(this->hasShip(ship) && this->shipIsFloating(ship)))
+    if(!(this->hasShip(ship) && this->shipIsFloating(ship))){
+        cout << "Oopsie." << endl;
         return;
+    }
     for(size_t i = 0; i < this->floatingShips.size(); ++i)
         if(this->floatingShips[i] == ship) {
             this->floatingShips.erase(this->floatingShips.begin() + i);
@@ -199,19 +209,26 @@ bool Player::spaceWasTargeted(string space) const {
     return false;
 }
 
-bool Player::target(string space) {
+bool Player::target(string space, bool do_cout) {
     if(this->foeGrid == nullptr)
         throw domain_error("Foe grid not set.");
     if(!Spaces::isSpaceString(space)) {
-        cout << "Invalid entry." << endl;
+        if(do_cout) cout << "Invalid entry." << endl;
         return false;
     }
     if(this->spaceWasTargeted(space)) {
-        cout << "Space already targeted." << endl;
+        if(do_cout) cout << "Space already targeted." << endl;
         return false;
     }
-    TargetResult shot = this->foeGrid->target(space);
+    TargetResult shot;
+    try {
+        shot = this->foeGrid->target(space);
+    } catch(std::exception& e) {
+        cout << e.what() << endl;
+        return false;
+    }
     this->targetedSpaces.push_back(space);
+    if (!do_cout) cout << space << endl;
     switch (shot) {
         case MISS: {
             this->missSpaces.push_back(space);
@@ -423,7 +440,7 @@ void Player::autoPutShip(Ship* ship, int(*rand_func)()) {
         char direction = directions[static_cast<size_t>(rand_func() % 4)];
         ship->setIsReady(ship->placeOnGrid(start_space, direction, false));
     }
-    this->ships[static_cast<size_t>(ship->getShipType())-1] = ship;
+    this->ships[static_cast<size_t>(ship->getShipType())] = ship;
     this->floatingShips.push_back(ship);
 }
 
