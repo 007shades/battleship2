@@ -181,6 +181,6 @@ void Game::playGame(int(*rand_func)()){
             cout << "Here is Camden\'s grid: " << endl;
             cout << "" << endl;
             this->cpu->getGrid()->showGrid(true);
-        }
-    } else cout << "You win!" << endl;
+        } else cout << "You win!" << endl;
+    }
 }
