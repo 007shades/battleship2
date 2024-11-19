@@ -1,29 +1,52 @@
 #ifndef ENUMS_H
 #define ENUMS_H
 
-#include <string>
+#include <string>  // Provides the string class.
     using std::string;
 
-enum SpaceStatus {UNTARGETED, TARGETED};
+// **ENUMERATIONS**
 
-enum StudStatus {INTACT, COMPROMISED};
+// Represents the status of a grid space (untargeted or targeted).
+enum SpaceStatus { UNTARGETED, TARGETED };
 
-enum ShipStatus {AFLOAT, SUNKEN};
+// Represents the status of a stud on a ship (intact or compromised).
+enum StudStatus { INTACT, COMPROMISED };
 
-enum StudName {A_1, A_2, A_3, A_4, A_5, B_1, B_2, B_3, B_4, D_1, D_2, D_3, S_1, S_2, S_3, C_1, C_2};
+// Represents the overall status of a ship (afloat or sunken).
+enum ShipStatus { AFLOAT, SUNKEN };
 
-enum Column {ALPHA = 'A', BRAVO, CHARLIE, DELTA, ECHO, FOXTROT, GULF, INDIA, JULIET};
+// Represents the specific name of a stud on ships.
+enum StudName { 
+    A_1, A_2, A_3, A_4, A_5, 
+    B_1, B_2, B_3, B_4, 
+    D_1, D_2, D_3, 
+    S_1, S_2, S_3, 
+    C_1, C_2 
+};
 
-enum Row {ONE = 1, TWO, THREE, FOUR, FIVE, SIX, SEVEN, EIGHT, NINE, TEN};
+// Represents columns on the grid using phonetic alphabet.
+enum Column { 
+    ALPHA = 'A', BRAVO, CHARLIE, DELTA, ECHO, FOXTROT, GULF, INDIA, JULIET 
+};
 
-enum ShipType {CARRIER, BATTLESHIP, SUBMARINE, DESTROYER, CRUISER};
+// Represents rows on the grid as numbers.
+enum Row { 
+    ONE = 1, TWO, THREE, FOUR, FIVE, SIX, SEVEN, EIGHT, NINE, TEN 
+};
 
-enum CamdenType {EASY, HARD};
+// Represents the type of ship.
+enum ShipType { CARRIER, BATTLESHIP, SUBMARINE, DESTROYER, CRUISER };
 
-enum TargetResult {MISS, HIT};
+// Represents difficulty levels for a player type.
+enum CamdenType { EASY, HARD };
 
-enum PlayerType {CPU, MAN};
+// Represents the result of an attack (miss or hit).
+enum TargetResult { MISS, HIT };
 
+// Represents the type of player (CPU or human).
+enum PlayerType { CPU, MAN };
+
+// Represents names for every space on a 10x10 grid.
 enum SpaceName {
     A1 = 1, B1, C1, D1, E1, F1, G1, H1, I1, J1,
     A2, B2, C2, D2, E2, F2, G2, H2, I2, J2,
@@ -37,8 +60,11 @@ enum SpaceName {
     A10, B10, C10, D10, E10, F10, G10, H10, I10, J10
 };
 
+// **STRUCTURES**
+
+// Handles spaces on the game grid.
 struct Spaces {
-    
+    // Arrays representing grid spaces and attributes.
     inline static SpaceName spaceNames[] = {
         A1, B1, C1, D1, E1, F1, G1, H1, I1, J1,
         A2, B2, C2, D2, E2, F2, G2, H2, I2, J2,
@@ -65,11 +91,12 @@ struct Spaces {
         "A10", "B10", "C10", "D10", "E10", "F10", "G10", "H10", "I10", "J10"
     };
 
-    inline static Column columnNames[] = {ALPHA, BRAVO, CHARLIE, DELTA, ECHO, FOXTROT, GULF, INDIA, JULIET};
-    inline static Row rowNames[]= {ONE, TWO, THREE, FOUR, FIVE, SIX, SEVEN, EIGHT, NINE, TEN};
-    inline static char columnChars[] = {'A','B','C','D','E','F','G','H','I','J'};
-    inline static char rowChars[] = {'1','2','3','4','5','6','7','8','9','0'};
+    inline static Column columnNames[] = { ALPHA, BRAVO, CHARLIE, DELTA, ECHO, FOXTROT, GULF, INDIA, JULIET };
+    inline static Row rowNames[] = { ONE, TWO, THREE, FOUR, FIVE, SIX, SEVEN, EIGHT, NINE, TEN };
+    inline static char columnChars[] = { 'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J' };
+    inline static char rowChars[] = { '1', '2', '3', '4', '5', '6', '7', '8', '9', '0' };
 
+    // Methods for validating and converting grid spaces and coordinates.
     static bool isSpaceString(string space_string);
     static SpaceName nameFromString(string space_string);
     static string stringFromName(SpaceName space_name);
@@ -79,8 +106,15 @@ struct Spaces {
     static char charFromRow(Row the_row);
 };
 
+// Handles studs on ships.
 struct Studs {
-    inline static StudName studNames[] = {A_1, A_2, A_3, A_4, A_5, B_1, B_2, B_3, B_4, D_1, D_2, D_3, S_1, S_2, S_3, C_1, C_2};
+    inline static StudName studNames[] = { 
+        A_1, A_2, A_3, A_4, A_5, 
+        B_1, B_2, B_3, B_4, 
+        D_1, D_2, D_3, 
+        S_1, S_2, S_3, 
+        C_1, C_2 
+    };
 };
 
-#endif
+#endif // Ends the include guard.
