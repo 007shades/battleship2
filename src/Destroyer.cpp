@@ -1,103 +1,117 @@
-#include "Destroyer.h" // Include Destroyer header file.
-#include "Ship.h" // Include base class Ship header file.
+#include "Destroyer.h"
+#include "Ship.h"
 
-#include "Enums.h" // Include Enums for predefined enumerations.
-#include "Grid.h" // Include Grid class for handling game grid.
-#include "Stud.h" // Include Stud class for ship parts.
+#include "Enums.h"  // For enumerations like ShipType, PlayerType, and StudName.
+#include "Grid.h"   // For handling grid-related operations.
+#include "Stud.h"   // For managing the Destroyer's studs.
 
-#include <string> // Include string for handling text.
-    using std::string; // Use string from the standard namespace.
+#include <string>
+    using std::string; // For string manipulation.
+#include <array>
+    using std::array;  // Fixed-size array for the Destroyer's studs.
+#include <stdexcept>
+    using std::out_of_range; // Exception handling for invalid grid placements.
+#include <iostream>
+    using std::cout;
+    using std::endl;
 
-#include <array> // Include array for fixed-size arrays.
-    using std::array; // Use array from the standard namespace.
-
-#include <stdexcept> // Include for handling exceptions like out_of_range.
-    using std::out_of_range; // Use out_of_range from the standard namespace.
-
-#include <iostream> // Include for input-output operations.
-    using std::cout; // Use cout for console output.
-    using std::endl; // Use endl for line breaks.
-
-// Default constructor: Initializes a Destroyer with ShipType::DESTROYER.
+// **Default Constructor**
+// Initializes a Destroyer without associating it with any player or grid.
 Destroyer::Destroyer() : Ship(ShipType::DESTROYER) {}
 
-// Constructor: Initializes a Destroyer with a specific player type.
+// **Player-Specific Constructor**
+// Creates a Destroyer for a specific player (e.g., CPU or human).
 Destroyer::Destroyer(PlayerType of_player) : Ship(ShipType::DESTROYER, of_player) {}
 
-// Constructor: Initializes a Destroyer with a grid and sets up studs.
+// **Grid-Specific Constructor**
+// Creates a Destroyer and associates it with a grid.
 Destroyer::Destroyer(Grid* on_grid) : Ship(ShipType::DESTROYER, on_grid) 
 {
-    this->setStuds(); // Set up studs for the destroyer.
+    this->setStuds(); // Initializes the studs for the Destroyer.
 }
 
-// Constructor: Initializes a Destroyer, sets up studs, and attempts to place it on the grid.
-Destroyer::Destroyer(Grid* on_grid, string start_space, char direction) : Ship(ShipType::BATTLESHIP, on_grid) 
+// **Full Constructor**
+// Creates a Destroyer, initializes its studs, and attempts to place it on the grid.
+Destroyer::Destroyer(Grid* on_grid, string start_space, char direction) : Ship (ShipType::DESTROYER, on_grid)
 {
-// NOTE: Change ShipType::BATTLESHIP to ShipType::DESTROYER to correctly represent the Destroyer type.(line 34)
-    this->setStuds(); // Set up studs for the destroyer.
-    this->isReady = this->placeOnGrid(start_space, direction); // Try placing the destroyer on the grid.
+    this->setStuds(); // Initializes the studs.
+    this->isReady = this->placeOnGrid(start_space, direction); // Attempts placement on the grid.
 }
 
-// Destructor: Cleans up dynamically allocated Stud objects.
+// **Destructor**
+// Cleans up dynamically allocated memory for the Destroyer's studs.
 Destroyer::~Destroyer() {
     for(size_t i = 0; i < 3; ++i) {
-        delete this->studs[i]; // Delete each stud to free memory.
-        this->studs[i] = nullptr; // Set pointer to nullptr to prevent dangling pointers.
+        delete this->studs[i]; // Free memory for each stud.
+        this->studs[i] = nullptr; // Set the pointer to nullptr for safety.
     }
 }
 
-// Getter: Returns the array of studs in the destroyer.
+// **Getter for All Studs**
+// Returns an array of pointers to the Destroyer's studs.
 array<Stud*, 3> Destroyer::getStuds() const {
     return this->studs;
 }
 
-// Getter: Returns a specific Stud by name if it exists in the destroyer.
+// **Getter for a Specific Stud**
+// Returns a specific stud based on its name.
 Stud* Destroyer::getStud(StudName stud_name) const {
-    for(Stud* stud : this->studs) // Iterate over the studs.
-        if(stud->getStudName() == stud_name) // Check if the stud matches the name.
-            return stud; // Return the found stud.
-    return nullptr; // Return nullptr if not found.
+    for(Stud* stud : this->studs) {
+        if(stud->getStudName() == stud_name) // Match the stud by its name.
+            return stud;
+    }
+    return nullptr; // Return nullptr if no matching stud is found.
 }
 
-// Method: Checks if the given Stud pointer is part of the destroyer.
+// **Check if a Stud Belongs to the Destroyer**
+// Verifies whether the given stud is part of the Destroyer.
 bool Destroyer::hasStud(Stud* stud) const {
-    for(Stud* the_stud : this->studs) // Iterate over the studs.
-        if(the_stud == stud) // Check if the pointer matches.
-            return true; // Return true if found.
-    return false; // Return false if not found.
+    for(Stud* the_stud : this->studs) {
+        if(the_stud == stud) // Compare pointers to identify the stud.
+            return true;
+    }
+    return false; // Return false if the stud does not belong to the Destroyer.
 }
 
-// Method: Initializes the studs array with new Stud objects.
+// **Set Up Studs**
+// Dynamically allocates and initializes the studs for the Destroyer.
 void Destroyer::setStuds() {
-    for(size_t i = 9, j = 0; i < 12; i++, j++) {
-        this->studs[j] = new Stud(Studs::studNames[i], this->ofPlayer, this); // Create new Stud.
-        this->intactStuds.push_back(this->studs[j]); // Add to intact studs list.
+    for(size_t i = 9, j = 0; i < 12; i++, j++) { // Destroyer uses studs indexed from 9 to 11.
+        this->studs[j] = new Stud(Studs::studNames[i], this->ofPlayer, this); // Create new studs dynamically.
+        this->intactStuds.push_back(this->studs[j]); // Add the stud to the list of intact studs.
     }
 }
 
-// Method: Attempts to place the destroyer on the grid.
+// **Place Destroyer on the Grid**
+// Tries to place the Destroyer starting at a given space and direction.
+// Returns true if the placement is successful; otherwise, false.
 bool Destroyer::placeOnGrid(string start_space, char direction, bool print_out) const {
-    vector<string> ship_spaces; // Vector to hold the spaces occupied by the ship.
+    vector<string> ship_spaces; // Stores the grid spaces that the Destroyer will occupy.
     try {
-        ship_spaces = Grid::getVector(start_space, direction, 2); // Get vector of spaces.
-    } catch (out_of_range& e) { // Catch out_of_range exceptions.
+        // Calculate the grid spaces required for the Destroyer.
+        ship_spaces = Grid::getVector(start_space, direction, 2); // Destroyer has a length of 3 (2 additional spaces from the start).
+    } catch (out_of_range& e) {
+        // Handle cases where placement goes out of the grid's boundaries.
         if(print_out)
-            cout << "Out of range." << endl; // Print error message.
-        return false; // Return false if placement failed.
+            cout << "Out of range." << endl;
+        return false; // Placement failed.
     }
-    if(this->onGrid->hasNoGoSpace(ship_spaces)) { // Check if any space is restricted.
+
+    // Check if the spaces are already occupied or adjacent to other ships.
+    if(this->onGrid->hasNoGoSpace(ship_spaces)) {
         if(print_out)
-            cout << "Ships cannot be touching." << endl; // Print warning message.
-        return false; // Return false if placement failed.
+            cout << "Ships cannot be touching." << endl;
+        return false; // Placement failed.
     }
-    // Place each stud on the grid.
-    for(size_t i = 0; i < 3; i++)
+
+    // Place the Destroyer's studs on the grid.
+    for(size_t i = 0; i < 3; i++) 
         this->onGrid->setOnSpace(ship_spaces[i], this->studs[i]);
-    
-    // Add no-go spaces to prevent close placement of other ships.
-    vector<string> ship_neighbors = Grid::neighborSpaces(ship_spaces); // Get neighboring spaces.
-    this->onGrid->addNoGoSpaces(ship_spaces); // Mark occupied spaces as no-go.
-    this->onGrid->addNoGoSpaces(ship_neighbors); // Mark neighboring spaces as no-go.
-    
-    return true; // Return true if placement was successful.
+
+    // Mark neighboring spaces as no-go zones to prevent overlapping with other ships.
+    vector<string> ship_neighbors = Grid::neighborSpaces(ship_spaces);
+    this->onGrid->addNoGoSpaces(ship_spaces);    // Add the Destroyer's spaces to the no-go zones.
+    this->onGrid->addNoGoSpaces(ship_neighbors); // Add neighboring spaces to the no-go zones.
+
+    return true; 
 }
