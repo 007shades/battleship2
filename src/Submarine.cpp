@@ -1,99 +1,116 @@
-#include "Submarine.h" // Include Submarine header file.
-#include "Ship.h" // Include Ship base class header file.
+#include "Submarine.h"
+#include "Ship.h"
 
-#include "Enums.h" // Include for enumerated types used in the class.
-#include "Grid.h" // Include for the Grid class.
-#include "Stud.h" // Include for the Stud class.
+#include "Enums.h"
+#include "Grid.h"
+#include "Stud.h"
 
-#include <string> // Include for using string.
-    using std::string; // Use string from the standard namespace.
+#include <string>
+    using std::string;
 
-#include <array> // Include for using array.
-    using std::array; // Use array from the standard namespace.
+#include <array>
+    using std::array;
 
-#include <stdexcept> // Include for handling exceptions.
-    using std::out_of_range; // Use out_of_range from the standard namespace.
+#include <stdexcept>
+    using std::out_of_range;
 
-#include <iostream> // Include for console input/output.
-    using std::cout; // Use cout for output.
-    using std::endl; // Use endl for newline.
+#include <iostream>
+    using std::cout;
+    using std::endl;
 
-// Constructor: Initializes a Submarine without parameters.
+// **Default Constructor**
+// Creates a Submarine object without initializing it on a grid or associating it with a player.
 Submarine::Submarine() : Ship(ShipType::SUBMARINE) {}
 
-// Constructor: Initializes a Submarine with a PlayerType.
+// **Parameterized Constructor**
+// Associates the Submarine with a specific player type.
 Submarine::Submarine(PlayerType of_player) : Ship(ShipType::SUBMARINE, of_player) {}
 
-// Constructor: Initializes a Submarine with a Grid.
-Submarine::Submarine(Grid* on_grid) : Ship(ShipType::SUBMARINE, on_grid) {
-    this->setStuds(); // Set the studs for the Submarine.
+// **Grid Constructor**
+// Places the Submarine on a grid and initializes its studs (individual ship segments).
+Submarine::Submarine(Grid* on_grid) : Ship(ShipType::SUBMARINE, on_grid) 
+{
+    this->setStuds(); // Initializes the studs that represent parts of the Submarine.
 }
 
-// Constructor: Initializes a Submarine with a Grid, start space, and direction.
-// Note: The ShipType was mistakenly set to BATTLESHIP; changed to SUBMARINE to match the class.
-Submarine::Submarine(Grid* on_grid, string start_space, char direction) : Ship(ShipType::SUBMARINE, on_grid) {
-    this->setStuds(); // Set the studs for the Submarine.
-    this->isReady = this->placeOnGrid(start_space, direction); // Place the Submarine on the grid.
+// **Full Constructor**
+// Places the Submarine on a grid at a specific location and orientation.
+// It also initializes the studs and checks if the ship placement is valid.
+Submarine::Submarine(Grid* on_grid, string start_space, char direction) : Ship (ShipType::SUBMARINE, on_grid)
+{
+    this->setStuds(); // Initializes the studs.
+    this->isReady = this->placeOnGrid(start_space, direction); // Places the ship on the grid.
 }
 
-// Destructor: Cleans up resources used by the Submarine.
+// **Destructor**
+// Cleans up dynamically allocated memory for the studs of the Submarine.
 Submarine::~Submarine() {
-    for(size_t i = 0; i < 3; ++i) {
-        delete this->studs[i]; // Delete each stud.
-        this->studs[i] = nullptr; // Set stud pointer to nullptr.
+    for(size_t i = 0; i < 3; ++i) { // Submarines have 3 studs.
+        delete this->studs[i]; // Deletes each stud.
+        this->studs[i] = nullptr; // Sets the pointer to null to prevent dangling references.
     }
-}
+} 
 
-// Method: Returns an array of pointers to the studs of the Submarine.
+// **Getters**
+// Returns an array of pointers to the studs that make up the Submarine.
 array<Stud*, 3> Submarine::getStuds() const {
     return this->studs;
 }
 
-// Method: Returns a pointer to a stud given its StudName.
+// Returns a pointer to a specific stud by its name.
 Stud* Submarine::getStud(StudName stud_name) const {
-    for(Stud* stud : this->studs)
-        if(stud->getStudName() == stud_name)
+    for(Stud* stud : this->studs) // Loops through all the studs.
+        if(stud->getStudName() == stud_name) // Matches the stud by name.
             return stud;
-    return nullptr; // Return nullptr if the stud is not found.
+    return nullptr; // Returns nullptr if no match is found.
 }
 
-// Method: Checks if the Submarine has a specific stud.
+// **Check if the Submarine has a specific stud**
 bool Submarine::hasStud(Stud* stud) const {
-    for(Stud* the_stud : this->studs)
-        if(the_stud == stud)
+    for(Stud* the_stud : this->studs) // Loops through all the studs.
+        if(the_stud == stud) // Checks if the given stud matches.
             return true;
-    return false;
+    return false; // Returns false if the stud is not found.
 }
 
-// Method: Sets the studs for the Submarine and adds them to the list of intact studs.
+// **Initialize Studs**
+// Sets up the 3 studs for the Submarine, assigns names, and links them to the Submarine.
 void Submarine::setStuds() {
-    for(size_t i = 12, j = 0; i < 15; i++, j++) {
-        this->studs[j] = new Stud(Studs::studNames[i], this->ofPlayer, this); // Create a new stud.
-        this->intactStuds.push_back(this->studs[j]); // Add to the intact studs vector.
+    for(size_t i=12, j=0; i<15; i++, j++) { // Submarine's studs are indexed 12-14.
+        this->studs[j] = new Stud(Studs::studNames[i], this->ofPlayer, this); // Creates a new stud.
+        this->intactStuds.push_back(this->studs[j]); // Adds the stud to the intact studs list.
     }
 }
 
-// Method: Places the Submarine on the grid based on a start space and direction.
+// **Place Submarine on Grid**
+// Places the Submarine on the grid, ensuring the placement is valid and doesn't conflict with other ships.
 bool Submarine::placeOnGrid(string start_space, char direction, bool print_out) const {
-    vector<string> ship_spaces; // Vector to hold spaces occupied by the Submarine.
+    vector<string> ship_spaces; // List of spaces the ship will occupy.
+
     try {
-        ship_spaces = Grid::getVector(start_space, direction, 2); // Get vector of grid spaces for the Submarine.
+        // Calculates the spaces based on the starting point and direction.
+        ship_spaces = Grid::getVector(start_space, direction, 2); // Submarine occupies 3 spaces.
     } catch (out_of_range& e) {
         if(print_out)
-            cout << "Out of range." << endl; // Print message if the placement is out of range.
+            cout << "Out of range." << endl; // Prints an error if placement is out of bounds.
         return false;
     }
-    if(this->onGrid->hasNoGoSpace(ship_spaces)) { // Check if the placement is valid.
+
+    // Checks if the calculated spaces are invalid (e.g., overlap or adjacent to other ships).
+    if(this->onGrid->hasNoGoSpace(ship_spaces)) {
         if(print_out)
-            cout << "Ships cannot be touching." << endl; // Print message if spaces are invalid.
+            cout << "Ships cannot be touching." << endl; // Prints an error if the placement is invalid.
         return false;
     }
-    // Place each stud on the respective grid space.
+
+    // Places each stud of the Submarine on the corresponding grid spaces.
     for(size_t i = 0; i < 3; i++)
         this->onGrid->setOnSpace(ship_spaces[i], this->studs[i]);
-    
-    vector<string> ship_neighbors = Grid::neighborSpaces(ship_spaces); // Get neighboring spaces.
-    this->onGrid->addNoGoSpaces(ship_spaces); // Add occupied spaces to the no-go list.
-    this->onGrid->addNoGoSpaces(ship_neighbors); // Add neighboring spaces to the no-go list.
-    return true; // Return true if placement is successful.
+
+    // Adds neighboring spaces to the "no-go" list to prevent other ships from being placed too close.
+    vector<string> ship_neighbors = Grid::neighborSpaces(ship_spaces);
+    this->onGrid->addNoGoSpaces(ship_spaces); // Marks the ship's spaces as occupied.
+    this->onGrid->addNoGoSpaces(ship_neighbors); // Marks the neighboring spaces as restricted.
+
+    return true; // Returns true if the placement is successful.
 }
