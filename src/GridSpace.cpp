@@ -1,183 +1,127 @@
-#include "GridSpace.h" // Include GridSpace header file.
+#include "GridSpace.h"
+#include "Enums.h"
+#include "Stud.h"
 
-#include "Enums.h" // Include for enumerated types used in the class.
-#include "Stud.h" // Include Stud class for representing ship parts.
+#include <string>
+    using std::string;
 
-#include <string> // Include for handling strings.
-    using std::string; // Use string from the standard namespace.
+#include <stdexcept>
+    using std::out_of_range;
+    using std::invalid_argument;
 
-#include <stdexcept> // Include for handling exceptions like out_of_range and invalid_argument.
-    using std::out_of_range; // Use out_of_range from the standard namespace.
-    using std::invalid_argument; // Use invalid_argument from the standard namespace.
-
-// Method: Sets space data based on a given SpaceName.
+// **Private Method**
+// Sets up the attributes of the grid space based on the given `SpaceName`.
 void GridSpace::set_space_data(SpaceName space_name) {
-    string space_string = Spaces::stringFromName(space_name); // Get string representation of the space.
-    char letter = space_string.at(0); // Extract column letter.
-    char number = space_string.length() == 3 ? '0' : space_string.at(1); // Extract row number ('10' as '0').
-    this->spaceString = space_string; // Set spaceString member.
-    this->letter = letter; // Set letter member.
-    this->number = number; // Set number member.
-    this->column = Spaces::columnFromChar(letter); // Convert letter to Column type.
-    this->row = Spaces::rowFromChar(number); // Convert number to Row type.
+    string space_string = Spaces::stringFromName(space_name); // Converts `SpaceName` to string (e.g., "A1").
+    char letter = space_string.at(0); // Extracts the column letter.
+    char number = space_string.length() == 3 ? '0' : space_string.at(1); // Handles special case for row "10".
+    
+    // Initializes member variables.
+    this->spaceString = space_string;
+    this->letter = letter;
+    this->number = number;
+    this->column = Spaces::columnFromChar(letter); // Maps letter to column enum.
+    this->row = Spaces::rowFromChar(number);       // Maps number to row enum.
 }
+
+// **Constructors**
 
 // Default constructor.
 GridSpace::GridSpace() {}
 
-// Constructor: Initializes a GridSpace with a SpaceName.
+// Constructor with `SpaceName`.
 GridSpace::GridSpace(SpaceName space_name) : spaceName{space_name} {
-    this->set_space_data(space_name); // Set additional space data.
+    this->set_space_data(space_name); // Initializes the grid space based on its name.
 }
 
-// Constructor: Initializes a GridSpace with a SpaceName and player type.
-GridSpace::GridSpace(SpaceName space_name, PlayerType of_player) : spaceName{space_name}, ofPlayer{of_player} {
-    this->set_space_data(space_name); // Set additional space data.
+// Constructor with `SpaceName` and `PlayerType`.
+GridSpace::GridSpace(SpaceName space_name, PlayerType of_player) 
+    : spaceName{space_name}, ofPlayer{of_player} {
+    this->set_space_data(space_name);
 }
 
-// Constructor: Initializes a GridSpace with a SpaceName, player type, and status.
-GridSpace::GridSpace(SpaceName space_name, PlayerType of_player, SpaceStatus space_status) : spaceName{space_name}, ofPlayer{of_player}, status{space_status} {
-    this->set_space_data(space_name); // Set additional space data.
+// Constructor with `SpaceName`, `PlayerType`, and initial space status.
+GridSpace::GridSpace(SpaceName space_name, PlayerType of_player, SpaceStatus space_status) 
+    : spaceName{space_name}, ofPlayer{of_player}, status{space_status} {
+    this->set_space_data(space_name);
 }
 
-// Constructor: Initializes a GridSpace with a SpaceName, player type, status, and Stud.
-GridSpace::GridSpace(SpaceName space_name, PlayerType of_player, SpaceStatus space_status, Stud* the_stud) : spaceName{space_name}, ofPlayer{of_player}, status{space_status}, stud{the_stud} {
-    this->set_space_data(space_name); // Set additional space data.
+// Constructor with `SpaceName`, `PlayerType`, space status, and an associated `Stud`.
+GridSpace::GridSpace(SpaceName space_name, PlayerType of_player, SpaceStatus space_status, Stud* the_stud) 
+    : spaceName{space_name}, ofPlayer{of_player}, status{space_status}, stud{the_stud} {
+    this->set_space_data(space_name);
 }
 
-// Destructor: Cleans up resources used by the GridSpace.
+// Destructor to clean up resources.
 GridSpace::~GridSpace() {
-    this->stud = nullptr; // Set stud pointer to nullptr.
+    this->stud = nullptr; // Clears the pointer to avoid dangling references.
 }
 
-// Getter: Returns the SpaceName of the GridSpace.
-SpaceName GridSpace::getSpaceName() const {
-    return this->spaceName;
-}
+// **Getter Methods**
+SpaceName GridSpace::getSpaceName() const { return this->spaceName; }
+Column GridSpace::getColumn() const { return this->column; }
+Row GridSpace::getRow() const { return this->row; }
+PlayerType GridSpace::getOfPlayer() const { return this->ofPlayer; }
+SpaceStatus GridSpace::getStatus() const { return this->status; }
+Stud* GridSpace::getStud() const { return this->stud; }
+string GridSpace::getSpaceString() const { return this->spaceString; }
+char GridSpace::getLetter() const { return this->letter; }
+char GridSpace::getNumber() const { return this->number; }
+char GridSpace::getLabel() const { return this->label; }
+char GridSpace::getPrimeLabel() const { return this->primeLabel; }
 
-// Getter: Returns the Column of the GridSpace.
-Column GridSpace::getColumn() const {
-    return this->column;
-}
-
-// Getter: Returns the Row of the GridSpace.
-Row GridSpace::getRow() const {
-    return this->row;
-}
-
-// Getter: Returns the PlayerType associated with the GridSpace.
-PlayerType GridSpace::getOfPlayer() const {
-    return this->ofPlayer;
-}
-
-// Getter: Returns the SpaceStatus of the GridSpace.
-SpaceStatus GridSpace::getStatus() const {
-    return this->status;
-}
-
-// Getter: Returns a pointer to the Stud on the GridSpace.
-Stud* GridSpace::getStud() const {
-    return this->stud;
-}
-
-// Getter: Returns the string representation of the space.
-string GridSpace::getSpaceString() const {
-    return this->spaceString;
-}
-
-// Getter: Returns the column letter of the GridSpace.
-char GridSpace::getLetter() const {
-    return this->letter;
-}
-
-// Getter: Returns the row number character of the GridSpace.
-char GridSpace::getNumber() const {
-    return this->number;
-}
-
-// Getter: Returns the label of the GridSpace.
-char GridSpace::getLabel() const {
-    return this->label;
-}
-
-// Getter: Returns the prime label of the GridSpace (used for hidden state).
-char GridSpace::getPrimeLabel() const {
-    return this->primeLabel;
-}
-
-// Setter: Sets the SpaceName and updates space data accordingly.
+// **Setter Methods**
 void GridSpace::setSpaceName(SpaceName space_name) {
-    this->spaceName = space_name; // Set the spaceName member.
-    this->set_space_data(space_name); // Update additional space data.
+    this->spaceName = space_name;
+    this->set_space_data(space_name); // Recalculate space data based on new name.
 }
 
-// Setter: Sets the PlayerType associated with the GridSpace.
-void GridSpace::setOfPlayer(PlayerType of_player) {
-    this->ofPlayer = of_player;
-}
+void GridSpace::setOfPlayer(PlayerType of_player) { this->ofPlayer = of_player; }
+void GridSpace::setStatus(SpaceStatus space_status) { this->status = space_status; }
+void GridSpace::setStud(Stud* the_stud) { this->stud = the_stud; }
+void GridSpace::setLabel(char label) { this->label = label; }
 
-// Setter: Sets the SpaceStatus of the GridSpace.
-void GridSpace::setStatus(SpaceStatus space_status) {
-    this->status = space_status;
-}
-
-// Setter: Sets the Stud on the GridSpace.
-void GridSpace::setStud(Stud* the_stud) {
-    this->stud = the_stud;
-}
-
-// Setter: Sets the label of the GridSpace.
-void GridSpace::setLabel(char label) {
-    this->label = label;
-}
-
-// Method: Adds a Stud to the GridSpace and updates labels.
+// Adds a `Stud` to this grid space.
 void GridSpace::addStud(Stud* the_stud) {
-    if(this->hasStud())
-        throw invalid_argument("Space already occupied."); // Throw if space is already occupied.
-    this->stud = the_stud; // Set the stud pointer.
-    this->label = the_stud->getLabel(); // Update label.
-    this->primeLabel = the_stud->getLabel(); // Update prime label.
+    if (this->hasStud())
+        throw invalid_argument("Space already occupied."); // Prevents multiple studs in the same space.
+
+    this->stud = the_stud; // Associates the stud with this space.
+
+    // Update labels based on the player type.
+    if (this->ofPlayer == MAN)
+        this->label = the_stud->getLabel(); // Display the stud's label.
+    this->primeLabel = the_stud->getLabel();
 }
 
-// Method: Checks if the GridSpace has a Stud.
-bool GridSpace::hasStud() const {
-    return this->stud != nullptr; // Return true if stud is not null.
-}
+// **State Check Methods**
+bool GridSpace::hasStud() const { return this->stud != nullptr; }
+bool GridSpace::wasTargeted() const { return this->status == SpaceStatus::TARGETED; }
 
-// Method: Checks if the GridSpace was targeted.
-bool GridSpace::wasTargeted() const {
-    return this->status == SpaceStatus::TARGETED; // Return true if status is TARGETED.
-}
-
-// Method: Modifies the label based on the targeting and ownership state.
+// Modifies the label based on the space's state (e.g., hit, miss).
 void GridSpace::modifyLabel() {
-    if(this->ofPlayer == PlayerType::CPU) {
+    if (this->ofPlayer == PlayerType::CPU) {
         this->label = this->hasStud() ? 'H' : 'M'; // 'H' for hit, 'M' for miss.
-        if(this->hasStud())
-            this->primeLabel = this->stud->getLabel(); // Set prime label for hit.
-        else
-            this->primeLabel = '@'; // Set prime label for miss.
-    }
-    else {
-        if(this->hasStud())
-            this->label = this->stud->getLabel(); // Show stud's label if present.
-        else
-            this->label = '@'; // Set label for empty space.
+        this->primeLabel = this->hasStud() ? this->stud->getLabel() : '@'; // '@' for miss.
+    } else {
+        this->label = this->hasStud() ? this->stud->getLabel() : '@';
     }
 }
 
-// Method: Targets the GridSpace and updates status and labels.
+// Targets this space during gameplay.
 TargetResult GridSpace::target() {
-    if(this->wasTargeted())
-        throw out_of_range("Space already targeted."); // Throw if already targeted.
-    this->status = SpaceStatus::TARGETED; // Set status to TARGETED.
-    if(this->hasStud()) {
-        this->stud->hit(); // Mark stud as hit.
-        this->modifyLabel(); // Update labels.
-        return TargetResult::HIT; // Return HIT result.
+    if (this->wasTargeted())
+        throw invalid_argument("Space already targeted."); // Prevents retargeting the same space.
+
+    // Mark space as targeted.
+    this->status = SpaceStatus::TARGETED;
+
+    if (this->hasStud()) {
+        this->stud->hit();      // Marks the associated stud as hit.
+        this->modifyLabel();    // Updates the label to reflect the hit.
+        return TargetResult::HIT;
     } else {
-        this->modifyLabel(); // Update labels for a miss.
-        return TargetResult::MISS; // Return MISS result.
+        this->modifyLabel();    // Updates the label to reflect the miss.
+        return TargetResult::MISS;
     }
 }
