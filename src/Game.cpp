@@ -1,107 +1,113 @@
-#include "Game.h" // Include Game header file.
+#include "Game.h"
 
-#include "Camden.h" // Include Camden AI class.
-#include "Enums.h" // Include Enums for predefined enumerations.
-#include "Player.h" // Include Player class for handling player functionality.
+#include "Camden.h"  // AI logic for the CPU player.
+#include "Enums.h"   // Enumerations for player types and results.
+#include "Player.h"  // Human and CPU player details.
 
-#include <string> // Include string for handling text.
-    using std::string; // Use string from the standard namespace.
+#include <string>
+    using std::string;
 
-#include <iostream> // Include for input-output operations.
-    using std::cout; // Use cout for console output.
-    using std::cin; // Use cin for console input.
-    using std::endl; // Use endl for line breaks.
+#include <iostream>
+    using std::cout;
+    using std::cin;
+    using std::endl;
 
-#include <unistd.h> // Include for sleep function to create delays.
+#include <unistd.h>  // For the sleep function, to create delays for a smoother user experience.
 
-#include <stdexcept> // Include for handling exceptions like logic_error.
-    using std::logic_error; // Use logic_error from the standard namespace.
+#include <stdexcept>
+    using std::logic_error;
 
-// Default constructor.
+// **Default Constructor**
+// Initializes a Game object without setting up players or starting the game.
 Game::Game() {}
 
-// Constructor: Initializes the game with a human player name and sets up players and Camden AI.
+// **Single-Player Constructor**
+// Initializes the game with a human player and a CPU opponent.
 Game::Game(string human_name) {
-    this->cpu = new Player(CPU); // Create CPU player.
-    this->human = new Player(MAN, human_name, this->cpu); // Create human player and associate with CPU.
-    this->cpu->makeFoe(this->human); // Set human as the CPU's foe.
-    this->camden = new Camden(this->cpu); // Initialize Camden AI with CPU player.
+    this->cpu = new Player(CPU);               // Create the CPU player.
+    this->human = new Player(MAN, human_name); // Create the human player with the given name.
 }
 
-// Constructor: Initializes the game, sets up the game state, and starts the game loop.
+// **Game Setup Constructor**
+// Initializes players, sets up the game, and starts gameplay.
 Game::Game(string human_name, int(*rand_func)()) : Game(human_name) {
-    this->doSetUp(rand_func); // Set up players' ships.
-    this->doCoinToss(rand_func); // Perform a coin toss to decide the first turn.
-    this->playGame(rand_func); // Start the game loop.
+    this->doSetUp(rand_func);     // Set up the game (place ships).
+    this->doCoinToss(rand_func);  // Decide who goes first with a coin toss.
+    this->doFinalSetup();         // Finalize setup (link players and AI).
+    this->playGame(rand_func);    // Start the game loop.
 }
 
-// Destructor: Cleans up dynamically allocated memory for players and Camden AI.
+// **Destructor**
+// Frees dynamically allocated memory for players and the AI.
 Game::~Game() {
-    delete this->human; // Delete human player.
-    this->human = nullptr; // Set pointer to nullptr to avoid dangling pointers.
-    delete this->cpu; // Delete CPU player.
-    this->cpu = nullptr; // Set pointer to nullptr.
-    delete this->camden; // Delete Camden AI.
-    this->camden = nullptr; // Set pointer to nullptr.
+    delete this->human;  // Free memory for the human player.
+    this->human = nullptr;
+    delete this->cpu;    // Free memory for the CPU player.
+    this->cpu = nullptr;
+    delete this->camden; // Free memory for the AI logic.
+    this->camden = nullptr;
 }
 
-// Getter: Returns the human player.
+// **Getter for Human Player**
 Player* Game::getHuman() const {
     return this->human;
 }
 
-// Getter: Returns the CPU player.
+// **Getter for CPU Player**
 Player* Game::getCpu() const {
     return this->cpu;
 }
 
-// Getter: Returns the Camden AI.
+// **Getter for AI Logic**
 Camden* Game::getCamden() const {
     return this->camden;
 }
 
-// Getter: Returns the current turn (which player should play).
+// **Getter for Current Turn**
 PlayerType Game::getTurn() const {
     return this->turn;
 }
 
-// Setter: Sets the human player.
+// **Setter for Human Player**
 void Game::setHuman(Player* the_human) {
     this->human = the_human;
 }
 
-// Setter: Sets the CPU player.
+// **Setter for CPU Player**
 void Game::setCpu(Player* the_cpu) {
     this->cpu = the_cpu;
 }
 
-// Setter: Sets the Camden AI.
+// **Setter for AI Logic**
 void Game::setCamden(Camden* new_camden) {
     this->camden = new_camden;
 }
 
-// Setter: Sets the current turn.
+// **Setter for Turn**
 void Game::setTurn(PlayerType the_turn) {
     this->turn = the_turn;
 }
 
-// Method: Checks if any player has won the game.
+// **Check if Someone has Won**
+// Determines if either player has sunk all opponent ships.
 bool Game::someoneHasWon() const {
-    return this->human->allShipsAreSunk() || this->cpu->allShipsAreSunk(); // Returns true if either player's ships are all sunk.
+    return this->human->allShipsAreSunk() || this->cpu->allShipsAreSunk();
 }
 
-// Method: Determines the winner of the game.
+// **Identify Winner**
+// Returns the winner based on the state of the game.
 PlayerType Game::winner() const {
-    if(this->someoneHasWon()) { // Check if the game has a winner.
-        if(this->human->allShipsAreSunk()) // Check if human player lost.
-            return CPU; // CPU wins.
+    if(this->someoneHasWon()) {
+        if(this->human->allShipsAreSunk())
+            return CPU; // CPU wins if the human's ships are all sunk.
         else
-            return MAN; // Human wins.
+            return MAN; // Human wins otherwise.
     }
-    throw logic_error("Nobody has won yet."); // Throw exception if called before game is over.
+    throw logic_error("Nobody has won yet."); // No winner if the game is still ongoing.
 }
 
-// Method: Switches the current turn between the human and CPU.
+// **Switch Turn**
+// Alternates between the human and CPU player.
 void Game::switchTurn() {
     switch(this->turn) {
         case MAN:
@@ -113,90 +119,106 @@ void Game::switchTurn() {
     }
 }
 
-// Method: Executes the CPU's turn using Camden's move logic.
+// **CPU Turn Logic**
+// Executes the CPU's turn using AI logic.
 void Game::doCpuTurn(int(*rand_func)()) const {
-    string camden_space = this->camden->makeMove(rand_func); // Get Camden's move.
-    cout << camden_space << endl; // Print the chosen space.
-    if (!(this->cpu->target(camden_space))) // Check if the move was valid.
-        throw logic_error("Whoops! Something went wrong. (Camden\'s choice: " + camden_space + ")"); // Throw error if invalid.
+    string bad_space = "NA"; // Placeholder for invalid spaces.
+    bool good_space_chosen = false;
+    string camden_space;
+    do {
+        camden_space = this->camden->makeMove(rand_func, bad_space); // AI chooses a space.
+        good_space_chosen = this->cpu->target(camden_space, false);  // Try targeting that space.
+        if(!good_space_chosen) bad_space = camden_space;            // Retry if the space was invalid.
+    } while (!good_space_chosen);
 }
 
-// Method: Executes the human's turn.
+// **Human Turn Logic**
+// Prompts the human player to make their move.
 void Game::doHumanTurn() const {
-    this->human->doTurn(); // Call method for human player to take a turn.
+    this->human->doTurn();
 }
 
-// Method: Executes a turn for either the human or CPU, based on the current turn state.
+// **Execute a Turn**
+// Executes a turn for the current player and switches turns.
 void Game::doTurn(int(*rand_func)()) {
     if(this->turn == CPU)
-        this->doCpuTurn(rand_func); // Call CPU's turn method.
+        this->doCpuTurn(rand_func); // CPU's turn.
     else if(this->turn == MAN)
-        this->doHumanTurn(); // Call human's turn method.
+        this->doHumanTurn(); // Human's turn.
     else
-        throw logic_error("It is nobody\'s turn."); // Throw error if no valid turn state.
-    this->switchTurn(); // Switch the turn after the current move.
+        throw logic_error("It is nobody\'s turn."); // Handle invalid states.
+    this->switchTurn(); // Switch to the next player's turn.
 }
 
-// Method: Sets up the game by allowing the human to set their ships and the CPU to auto-set ships.
+// **Game Setup**
+// Allows the human to place ships and auto-places ships for the CPU.
 void Game::doSetUp(int(*rand_func)()) {
-    this->human->askToSetShips(rand_func); // Prompt human to set their ships.
-    cout << "\nCamden is setting his ships...";
-    this->cpu->autoSetShips(rand_func); // CPU sets its ships automatically.
-    sleep(1); // Wait for a moment to simulate setup time.
-    cout << "   Done." << endl; // Indicate completion.
+    this->human->askToSetShips(rand_func); // Human sets their ships.
+    cout << "\nCamden is setting his ships..." << endl;
+    this->cpu->autoSetShips(rand_func); // CPU's ships are auto-placed.
+    sleep(1);
+    cout << "   Done." << endl;
 }
 
-// Method: Performs a coin toss to decide which player goes first.
+// **Coin Toss to Decide First Turn**
 void Game::doCoinToss(int(*rand_func)()) {
     char user_coin_choice;
     cout << "" << endl;
     cout << "Coin toss! Winner goes first. Heads or Tails?" << endl;
     cout << "(H / h or T / t) > ";
-    cin >> user_coin_choice; // Get user's choice.
-    int coin_toss = rand_func() % 2; // Simulate coin toss (0 or 1).
-    if (!coin_toss) { // If result is 0 (Heads).
+    cin >> user_coin_choice;
+    int coin_toss = rand_func() % 2; // Randomize coin toss.
+    if (!coin_toss){
         if(user_coin_choice == 'H' || user_coin_choice == 'h') {
             cout << "It\'s Heads, you won the toss and will go first." << endl;
-            this->turn = MAN; // Set turn to human.
+            this->turn = MAN;
         } else {
             cout << "It\'s Heads, you lost the toss and will go second." << endl;
-            this->turn = CPU; // Set turn to CPU.
+            this->turn = CPU;
         }
-    } else { // If result is 1 (Tails).
+    } else {
         if(user_coin_choice == 'T' || user_coin_choice == 't') {
             cout << "It\'s Tails, you won the toss and will go first." << endl;
-            this->turn = MAN; // Set turn to human.
+            this->turn = MAN;
         } else {
             cout << "It\'s Tails, you lost the toss and will go second." << endl;
-            this->turn = CPU; // Set turn to CPU.
         }
     }
-    sleep(1); // Wait for a moment to simulate delay.
+    sleep(1);
     cout << "" << endl;
     cout << "Loading Game..." << endl;
-    sleep(1); // Wait for another moment to simulate loading.
+    sleep(1);
     cout << "" << endl;
 }
 
-// Method: Main game loop that continues until someone wins.
-void Game::playGame(int(*rand_func)()) {
+// **Final Setup**
+// Links players and initializes the AI for CPU logic.
+void Game::doFinalSetup() {
+    this->human->makeFoe(this->cpu); // Set CPU as human's foe.
+    this->cpu->makeFoe(this->human); // Set human as CPU's foe.
+    this->camden = new Camden(this->cpu); // Initialize AI for CPU.
+}
+
+// **Game Loop**
+// Runs the main game loop until there is a winner.
+void Game::playGame(int(*rand_func)()){
     do {
         cout << "" << endl;
         this->doTurn(rand_func); // Execute a turn.
-        sleep(1); // Wait to simulate processing time.
+        sleep(1); // Add delay for better pacing.
         cout << "" << endl;
-    } while (!(this->someoneHasWon())); // Continue until someone wins.
-    if(this->someoneHasWon()) { // Check if a player has won.
+    } while (!(this->someoneHasWon())); // Continue until there is a winner.
+
+    // Announce the winner.
+    if(this->someoneHasWon()){
         cout << "" << endl;
-        if(this->winner() == CPU) { // Check if the CPU won.
+        if(this->winner() == CPU) {
             cout << "Camden wins!" << endl;
             sleep(1);
             cout << "" << endl;
-            cout << "Here is Camden\'s grid: " << endl; // Show Camden's grid for reference.
+            cout << "Here is Camden\'s grid: " << endl;
             cout << "" << endl;
-            this->cpu->getGrid()->showGrid(true); // Display the grid.
-        }
-    } else {
-        cout << "You win!" << endl; // Print message if human wins.
+            this->cpu->getGrid()->showGrid(true); // Show the CPU's grid.
+        } else cout << "You win!" << endl;
     }
 }
