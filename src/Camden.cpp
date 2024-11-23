@@ -1,228 +1,216 @@
-#include "Camden.h" // Include Camden header file.
+#include "Camden.h"
 
-#include "Enums.h" // Include Enums for predefined enumerations.
-#include "Grid.h" // Include Grid for handling game grid operations.
-#include "Player.h" // Include Player class for player interactions.
+#include "Enums.h"  // For enumerations like PlayerType and TargetResult.
+#include "Grid.h"   // To interact with the grid system of the game.
+#include "Player.h" // For managing player-specific operations.
 
-#include <string> // Include string class.
-    using std::string; // Use string from standard namespace.
+#include <string>
+    using std::string;
+#include <vector>
+    using std::vector;
+#include <stdexcept>
+    using std::out_of_range;
+    using std::logic_error;
+#include <iostream>
+    using std::cout;
+    using std::cin;
+    using std::endl;
 
-#include <vector> // Include vector class for dynamic arrays.
-    using std::vector; // Use vector from standard namespace.
-
-#include <stdexcept> // Include standard exceptions for error handling.
-    using std::out_of_range; // Use out_of_range for boundary checking.
-    using std::logic_error; // Use logic_error for logical exceptions.
-
-#include <iostream> // Include for input-output operations.
-    using std::cout; // Use cout for console output.
-    using std::cin; // Use cin for console input.
-
-// Method: Checks if a ship was just sunk by comparing the size of the numShipsSank vector.
-bool Camden::did_just_sink_ship() const {
-    return this->numShipsSank[this->numShipsSank.size() - 1] != this->numShipsSank[this->numShipsSank.size() - 2];
+// ** Checks if a ship was just sunk (Condition 1) **
+// Compares the latest count of sunk ships to the previous count.
+// If the counts differ, a new ship has been sunk.
+bool Camden::did_just_sink_ship_check1() const {
+    return this->numShipsSank[this->numShipsSank.size() - 1] != 
+           this->numShipsSank[this->numShipsSank.size() - 2];
 }
 
-// Method: Checks if a given space is available in the availableSpaces vector.
+// ** Checks if a ship was just sunk (Condition 2) **
+// Evaluates whether the current target ship was sunk during this turn.
+// Ensures the `hasSunkShip` flag has not yet been updated.
+bool Camden::did_just_sink_ship_check2() const {
+    return this->curVictimShip->wasSunk() && !this->hasSunkShip;
+}
+
+// ** Consolidated Sinking Check **
+// Combines the two checks to determine if a ship was sunk this turn.
+bool Camden::did_just_sink_ship() const {
+    return this->did_just_sink_ship_check1() || this->did_just_sink_ship_check2();
+}
+
+// ** Validates Space Availability **
+// Confirms if a given space is in the list of attackable spaces.
+// Returns `true` if the space can be targeted, otherwise `false`.
 bool Camden::space_is_available(string space) const {
-    for(string avail_space : this->availableSpaces)
-        if(avail_space == space)
+    for (const string& avail_space : this->availableSpaces) {
+        if (avail_space == space) {
             return true;
+        }
+    }
     return false;
 }
 
-// Method: Initializes Camden by setting up available spaces and attack directions.
+// ** Initializes Camden's State **
+// Populates the list of available spaces (all grid spaces) and
+// attack directions (`N`, `S`, `E`, `W`).
 void Camden::set_Camden() {
-    for(string space : Spaces::spaceStrings) // Populate available spaces.
+    for (const string& space : Spaces::spaceStrings) {
         this->availableSpaces.push_back(space);
-    for(char direction : this->directions) // Populate initial attack directions.
+    }
+    for (char direction : this->directions) {
         this->attackDirections.push_back(direction);
-}
-
-// Method: Resets Camden's state to default values.
-void Camden::reset_to_default() {
-    this->firstAttackSpace = "";
-    this->lastAttackSpace = "";
-    this->attackDirection = ' ';
-    this->isAttackingShip = false;
-    this->attackSpaces.clear(); // Clear attack spaces vector.
-    this->attackDirections.clear(); // Clear attack directions vector.
-    for(char direction : this->directions) // Restore initial directions.
-        this->attackDirections.push_back(direction);
-}
-
-// Method: Switches the current attack direction to its opposite.
-void Camden::switch_direction_to_opposite() {
-    switch(this->attackDirection) {
-        case 'N': this->attackDirection = 'S'; break;
-        case 'S': this->attackDirection = 'N'; break;
-        case 'E': this->attackDirection = 'W'; break;
-        case 'W': this->attackDirection = 'E'; break;
-        default: return; // Do nothing if no valid direction is set.
     }
 }
 
-// Method: Updates the numShipsSank vector to include the number of sunk ships of the opponent.
-void Camden::update_num_ships_sank() {
-    this->numShipsSank.push_back(static_cast<int>(this->self->getFoe()->getSunkenShips().size()));
+// ** Reverses the Current Attack Direction **
+// Used when Camden needs to switch its attack pattern to the opposite direction.
+void Camden::switch_direction_to_opposite() {
+    switch (this->attackDirection) {
+        case 'N':
+            this->attackDirection = 'S'; // North → South
+            break;
+        case 'S':
+            this->attackDirection = 'N'; // South → North
+            break;
+        case 'E':
+            this->attackDirection = 'W'; // East → West
+            break;
+        case 'W':
+            this->attackDirection = 'E'; // West → East
+            break;
+        default:
+            return; // No valid direction.
+    }
 }
 
-// Method: Identifies and removes spaces with no viable neighbors (holes).
+// ** Updates Sunk Ships History **
+// Tracks the number of ships sunk by the opponent at the current turn.
+// This helps Camden decide whether a ship was just sunk.
+void Camden::update_num_ships_sank() {
+    int num_ships_sank = static_cast<int>(this->self->getFoe()->getSunkenShips().size());
+    this->numShipsSank.push_back(num_ships_sank);
+}
+
+// ** Removes Isolated Spaces from Attack List **
+// Identifies spaces with no adjacent attackable neighbors and removes them.
+// These spaces are "holes" in the attack grid and are unlikely to contain ships.
 void Camden::check_for_holes() {
-    vector<string> holes; // Vector to store identified holes.
-    int good_neighbor_count; // Counter for good neighboring spaces.
-    for(string space : this->availableSpaces) {
-        good_neighbor_count = 0; // Reset count for each space.
-        for(char direction : this->directions){
+    vector<string> holes; // List of isolated spaces to be removed.
+    int good_neighbor_count; // Count of valid neighbors for each space.
+    for (const string& space : this->availableSpaces) {
+        good_neighbor_count = 0;
+        for (char direction : this->directions) {
             try {
-                string neighbor = Grid::goDirection(space, direction); // Get neighboring space.
-                if (this->space_is_available(neighbor))
-                    ++good_neighbor_count; // Increment if valid neighbor.
-            }
-            catch(out_of_range& e) { // Ignore out of range errors.
+                // Check the neighbor in the given direction.
+                string neighbor = Grid::goDirection(space, direction);
+                if (this->space_is_available(neighbor)) {
+                    ++good_neighbor_count;
+                }
+            } catch (out_of_range&) {
+                // Ignore out-of-bound neighbors.
                 continue;
             }
         }
-        if(!good_neighbor_count) // If no valid neighbors found, mark as a hole.
-            holes.push_back(space);
+        if (good_neighbor_count == 0) {
+            holes.push_back(space); // Mark isolated spaces for removal.
+        }
     }
-    this->remove_available_spaces(holes); // Remove identified holes from available spaces.
+    this->remove_available_spaces(holes); // Remove all isolated spaces.
 }
 
-// Method: Initiates an attack from a specific space.
+// ** Starts Targeting a Ship **
+// Marks the start of an attack sequence on a specific ship.
 void Camden::initiate_attack(string space) {
-    this->isAttackingShip = true; // Set attacking state.
-    this->firstAttackSpace = space; // Set the first attack space.
-    this->lastAttackSpace = space; // Set the last attack space.
-    this->attackSpaces.push_back(space); // Add space to attack spaces vector.
+    this->isAttackingShip = true; // Flag to indicate an ongoing attack.
+    this->curVictimShip = this->foeGrid->getSpace(space)->getStud()->getOfShip(); // Set target ship.
+    this->firstAttackSpace = space; // Record the first hit space.
+    this->lastAttackSpace = space; // Initialize the last hit space.
+    this->attackSpaces.push_back(space); // Add the space to the attack history.
 }
 
-// Method: Removes a specific attack direction from attackDirections vector.
+// ** Removes an Attack Direction **
+// Deletes a direction from the list of potential attack paths.
 void Camden::remove_attack_direction(char direction) {
-    for(size_t i = 0; i < this->attackDirections.size(); ++i)
-        if(this->attackDirections[i] == direction) {
-            this->attackDirections.erase(this->attackDirections.begin() + i); // Remove direction.
+    for (size_t i = 0; i < this->attackDirections.size(); ++i) {
+        if (this->attackDirections[i] == direction) {
+            this->attackDirections.erase(this->attackDirections.begin() + i);
             break;
         }
+    }
 }
 
-// Method: Removes a specific space from availableSpaces vector.
+// ** Removes a Space from Available Spaces **
+// Deletes the specified space from Camden's list of targetable spaces.
 void Camden::remove_available_space(string space) {
-    for (size_t i = 0; i < this->availableSpaces.size(); ++i)
-        if(this->availableSpaces[i] == space) {
-            this->availableSpaces.erase(this->availableSpaces.begin() + i); // Remove space.
+    for (size_t i = 0; i < this->availableSpaces.size(); ++i) {
+        if (this->availableSpaces[i] == space) {
+            this->availableSpaces.erase(this->availableSpaces.begin() + i);
             break;
         }
+    }
 }
 
-// Method: Removes multiple spaces from availableSpaces vector.
+// ** Removes Multiple Spaces from Available Spaces **
+// Calls `remove_available_space` for each space in the given list.
 void Camden::remove_available_spaces(vector<string> spaces) {
-    for(string space : spaces)
-        this->remove_available_space(space); // Remove each space.
+    for (const string& space : spaces) {
+        this->remove_available_space(space);
+    }
 }
 
-// Method: Switches direction to its opposite and resets last attack space to first.
+// ** Resets Camden's Attack State **
+// Clears the current attack state and prepares Camden for the next attack sequence.
+// Updates available spaces and resets attack directions.
+void Camden::reset_to_default() {
+    this->firstAttackSpace = ""; // Clear first attack space.
+    this->lastAttackSpace = "";  // Clear last attack space.
+    this->attackDirection = ' '; // Reset attack direction.
+    this->isAttackingShip = false; // No active ship being targeted.
+    this->hasSunkShip = false;     // Reset sunk ship flag.
+    this->curVictimShip = nullptr; // Clear current victim ship.
+    this->remove_available_spaces(this->attackSpaces); // Remove used attack spaces.
+    this->remove_available_spaces(Grid::neighborSpaces(this->attackSpaces)); // Remove neighboring spaces.
+    this->check_for_holes(); // Check for isolated spaces to remove.
+    this->attackSpaces.clear(); // Clear attack history.
+    this->attackDirections.clear(); // Reset attack directions.
+    for (char direction : this->directions) {
+        this->attackDirections.push_back(direction); // Re-add directions.
+    }
+}
+
+// ** Reverses Direction During an Attack **
+// Used when Camden needs to attack in the opposite direction from the current path.
 void Camden::do_switch() {
-    this->switch_direction_to_opposite(); // Change direction to opposite.
-    this->lastAttackSpace = this->firstAttackSpace; // Reset last attack space.
+    this->switch_direction_to_opposite(); // Reverse the direction.
+    this->lastAttackSpace = this->firstAttackSpace; // Reset the last attack space.
 }
 
-// Method: Checks if a space contains a part of a ship (stud).
+// ** Checks if a Space Contains a Ship's Stud **
+// Returns `true` if the space contains a ship part, otherwise `false`.
 bool Camden::is_a_hit(string space) const {
-    return this->foeGrid->getSpace(space)->hasStud(); // Return true if space has a stud.
+    return this->foeGrid->getSpace(space)->hasStud();
 }
 
-// Method: Picks a new attack direction and checks its validity.
+// ** Picks a Random Direction for Attack **
+// Chooses a new direction to attack, ensuring it is valid and within bounds.
 string Camden::pick_direction(int(*rand_func)(), char& direction) {
-    string new_space; // New space to attack.
+    string new_space; // Holds the new attack space.
     do {
-        direction = this->attackDirections[static_cast<size_t>(rand_func() % this->attackDirections.size())]; // Randomly select direction.
+        direction = this->attackDirections[static_cast<size_t>(rand_func() % this->attackDirections.size())];
         try {
             string& tentative_new_space = new_space;
-            tentative_new_space = Grid::goDirection(this->firstAttackSpace, direction); // Get new space in chosen direction.
-            if(this->space_is_available(new_space))
-                break; // Break if space is available.
-            else
-                this->remove_attack_direction(direction); // Remove direction if not valid.
-        }
-        catch(out_of_range& e) { // Handle out of range exception.
-            this->remove_attack_direction(direction); // Remove invalid direction.
+            tentative_new_space = Grid::goDirection(this->firstAttackSpace, direction); // Calculate the new space.
+            if (this->space_is_available(new_space)) {
+                break; // Valid space found.
+            } else {
+                this->remove_attack_direction(direction); // Remove invalid direction.
+            }
+        } catch (out_of_range&) {
+            this->remove_attack_direction(direction); // Handle out-of-bound directions.
             continue;
         }
-    } while(this->attackDirections.size()); // Repeat until directions are exhausted.
-    if(!new_space.length())
-        throw new logic_error("All directions exhausted."); // Throw error if no valid space found.
-    return new_space; // Return valid space.
-}
-
-// Method: Picks the next attack space based on the current attack state.
-string Camden::pick_attack_space(int(*rand_func)()) {
-    string new_space; // New space to attack.
-    char rand_direction; // Random direction chosen.
-    if(this->attackSpaces.size() == 1) { // If only one attack space.
-        new_space = this->pick_direction(rand_func, rand_direction); // Pick a direction.
-        if(this->is_a_hit(new_space)) { // Check if it is a hit.
-            this->attackDirection = rand_direction; // Set attack direction.
-            this->lastAttackSpace = new_space; // Update last attack space.
-            this->attackSpaces.push_back(new_space); // Add to attack spaces.
-        } else {
-            this->remove_attack_direction(rand_direction); // Remove direction if not a hit.
-        }
-    } else { // If more than one attack space exists.
-        try {
-            new_space = Grid::goDirection(this->lastAttackSpace, this->attackDirection); // Get next space in current direction.
-        } catch(out_of_range& e) { // Handle out of range exception.
-            this->do_switch(); // Switch to opposite direction.
-            new_space = Grid::goDirection(this->lastAttackSpace, this->attackDirection); // Get new space in switched direction.
-        }
-        if(this->is_a_hit(new_space)) { // Check if it is a hit.
-            this->lastAttackSpace = new_space; // Update last attack space.
-            this->attackSpaces.push_back(new_space); // Add to attack spaces.
-        } else {
-            this->do_switch(); // Switch direction if not a hit.
-        }
+    } while (this->attackDirections.size());
+    if (new_space.empty()) {
+        throw logic_error("All directions exhausted."); // No valid directions remain.
     }
-    this->update_num_ships_sank(); // Update number of ships sank.
-    if(this->did_just_sink_ship()) { // If a ship was just sunk.
-        this->remove_available_spaces(this->attackSpaces); // Remove attack spaces from available spaces.
-        this->remove_available_spaces(Grid::neighborSpaces(this->attackSpaces)); // Remove neighboring spaces.
-        this->check_for_holes(); // Check for holes.
-        this->reset_to_default(); // Reset attack state.
-    }
-    return new_space; // Return chosen space.
-}
-
-// Method: Picks a random space to attack.
-string Camden::pick_random_space(int(*rand_func)()) {
-    string new_space = this->availableSpaces[static_cast<size_t>(rand_func() % this->availableSpaces.size())]; // Pick a random space.
-    if(this->is_a_hit(new_space)) // Check if it is a hit.
-        this->initiate_attack(new_space); // Initiate attack if a hit.
-    else 
-        this->remove_available_space(new_space); // Remove space if not a hit.
-    this->update_num_ships_sank(); // Update number of ships sank.
-    return new_space; // Return chosen space.
-}
-
-// Constructor: Default.
-Camden::Camden() {}
-
-// Constructor: Initializes Camden with a given player.
-Camden::Camden(Player* the_self) : self{the_self}
-{
-    this->foeGrid = the_self->getFoeGrid(); // Set foe's grid.
-    this->set_Camden(); // Initialize Camden.
-}
-
-// Destructor: Cleans up Camden object.
-Camden::~Camden() {
-    this->self = nullptr; // Set self to nullptr.
-    this->foeGrid = nullptr; // Set foe grid to nullptr.
-}
-
-// Method: Makes a move by either continuing an attack or picking a random space.
-string Camden::makeMove(int(*rand_func)()) {
-    if(this->isAttackingShip)
-        return this->pick_attack_space(rand_func); // Continue attack if attacking a ship.
-    else
-        return this->pick_random_space(rand_func); // Pick random space otherwise.
+    return new_space;
 }
