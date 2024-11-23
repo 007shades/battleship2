@@ -1,54 +1,58 @@
-#ifndef GAME_H // Include guard to prevent multiple inclusions.
+#ifndef GAME_H
 #define GAME_H
 
-#include "Enums.h" // Include for enumerated types used in the class.
-#include "Player.h" // Include for Player class to handle player functionality.
-#include "Camden.h" // Include for Camden AI class.
+#include "Enums.h"   // Includes necessary enumerations (e.g., PlayerType).
+#include "Player.h"  // Defines the Player class for human and CPU.
+#include "Camden.h"  // Defines the AI logic for the CPU.
 
-#include <string> // Include for using the string class.
-    using std::string; // Use string from the standard namespace.
+#include <string>
+    using std::string;
 
-// Declaration of the Game class.
+// **Game Class**
+// Represents the Battleship game, managing players, turns, and the main game flow.
 class Game {
     private:
-        Player* human {nullptr}; // Pointer to the human player.
-        Player* cpu {nullptr}; // Pointer to the CPU player.
-        Camden* camden {nullptr}; // Pointer to the Camden AI instance.
-        PlayerType turn; // Variable to track whose turn it is.
+        Player* human {nullptr};   // Pointer to the human player.
+        Player* cpu {nullptr};     // Pointer to the CPU player.
+        Camden* camden {nullptr};  // AI logic for the CPU player.
+        PlayerType turn;           // Indicates whose turn it is (MAN or CPU).
 
     public:
-        // Constructors and Destructor.
-        Game(); // Default constructor.
-        explicit Game(string human_name); // Constructor initializing the game with a human player name.
-        Game(string human_name, int(*rand_func)()); // Constructor initializing and starting the game with setup.
-        ~Game(); // Destructor to clean up dynamically allocated resources.
+        // **Constructors and Destructor**
+        Game();                               // Default constructor.
+        explicit Game(string human_name);     // Constructor to initialize players with a human's name.
+        Game(string human_name, int(*rand_func)()); // Full constructor that sets up and starts the game.
+        ~Game();                              // Destructor to clean up dynamically allocated memory.
 
-        // Getter methods.
-        Player* getHuman() const; // Returns the human player.
-        Player* getCpu() const; // Returns the CPU player.
-        Camden* getCamden() const; // Returns the Camden AI instance.
-        PlayerType getTurn() const; // Returns whose turn it currently is.
+        // **Getter Methods**
+        Player* getHuman() const;             // Returns a pointer to the human player.
+        Player* getCpu() const;               // Returns a pointer to the CPU player.
+        Camden* getCamden() const;            // Returns a pointer to the AI logic.
+        PlayerType getTurn() const;           // Returns the current player's turn.
 
-        // Setter methods.
-        void setHuman(Player* the_human); // Sets the human player.
-        void setCpu(Player* the_cpu); // Sets the CPU player.
-        void setCamden(Camden* new_camden); // Sets the Camden AI instance.
-        void setTurn(PlayerType turn); // Sets whose turn it is.
+        // **Setter Methods**
+        void setHuman(Player* the_human);     // Sets the human player.
+        void setCpu(Player* the_cpu);         // Sets the CPU player.
+        void setCamden(Camden* new_camden);   // Sets the AI logic.
+        void setTurn(PlayerType turn);        // Sets the current turn.
 
-        // Game status methods.
-        bool someoneHasWon() const; // Checks if any player has won the game.
-        PlayerType winner() const; // Determines the winner of the game.
+        // **Game State Checks**
+        bool someoneHasWon() const;           // Checks if any player has won the game.
+        PlayerType winner() const;            // Returns the winner (throws an error if the game is not over).
 
-        // Game control methods.
-        void switchTurn(); // Switches the current turn between players.
-        void doCpuTurn(int(*rand_func)()) const; // Executes the CPU's turn.
-        void doHumanTurn() const; // Executes the human's turn.
-        void doTurn(int(*rand_func)()); // Executes a turn based on whose turn it is.
+        // **Game Flow Methods**
+        void switchTurn();                    // Switches the turn between the human and CPU players.
+        void doCpuTurn(int(*rand_func)()) const;  // Executes the CPU's turn using AI logic.
+        void doHumanTurn() const;             // Executes the human player's turn.
+        void doTurn(int(*rand_func)());       // Executes a turn for the current player.
 
-        // Game setup and gameplay methods.
-        void doSetUp(int(*rand_func)()); // Sets up the game by initializing ships for both players.
-        void doCoinToss(int(*rand_func)()); // Performs a coin toss to decide who goes first.
-        void playGame(int(*rand_func)()); // Main game loop that continues until someone wins.
+        // **Setup Methods**
+        void doSetUp(int(*rand_func)());      // Sets up the game by placing ships for both players.
+        void doCoinToss(int(*rand_func)());   // Simulates a coin toss to decide who goes first.
+        void doFinalSetup();                  // Finalizes setup by linking players and initializing AI.
+
+        // **Main Game Loop**
+        void playGame(int(*rand_func)());     // Main game loop that alternates turns until a winner is determined.
 };
 
-#endif // End of include guard.
+#endif
