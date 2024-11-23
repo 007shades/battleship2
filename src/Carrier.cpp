@@ -1,101 +1,115 @@
-#include "Carrier.h" // Include Carrier header file.
-#include "Ship.h" // Include base Ship class.
+#include "Carrier.h"
+#include "Ship.h"
 
-#include "Enums.h" // Include Enums for enumerated types.
-#include "Grid.h" // Include Grid for grid-related operations.
-#include "Stud.h" // Include Stud class representing parts of the ship.
+#include "Enums.h"     // For ShipType and PlayerType enumerations.
+#include "Grid.h"      // For placing the Carrier on the grid.
+#include "Stud.h"      // For managing the Carrier's studs.
 
-#include <string> // Include string class.
-    using std::string; // Use string from standard namespace.
+#include <string>
+    using std::string; // For space and ship names.
+#include <array>
+    using std::array;  // To manage fixed-size arrays for studs.
+#include <stdexcept>
+    using std::out_of_range; // For exception handling during grid operations.
+#include <iostream>
+    using std::cout;
+    using std::endl;
 
-#include <array> // Include array class for fixed-size arrays.
-    using std::array; // Use array from standard namespace.
-
-#include <stdexcept> // Include for exception handling.
-    using std::out_of_range; // Use out_of_range exception from standard namespace.
-
-#include <iostream> // Include for input-output operations.
-    using std::cout; // Use cout for console output.
-    using std::endl; // Use endl for line breaks.
-
-// Constructor: Initializes a Carrier with ShipType::CARRIER.
+// **Default Constructor**
+// Initializes a Carrier without any player or grid assignment.
 Carrier::Carrier() : Ship(ShipType::CARRIER) {}
 
-// Constructor: Initializes a Carrier with a specific PlayerType.
+// **Player-Specific Constructor**
+// Initializes a Carrier for a specific player.
 Carrier::Carrier(PlayerType of_player) : Ship(ShipType::CARRIER, of_player) {}
 
-// Constructor: Initializes a Carrier on a specific grid and sets up studs.
+// **Grid-Specific Constructor**
+// Initializes a Carrier and associates it with a grid.
 Carrier::Carrier(Grid* on_grid) : Ship(ShipType::CARRIER, on_grid) 
 {
-    this->setStuds(); // Call to set up the studs for the carrier.
+    this->setStuds(); // Sets up the studs associated with the Carrier.
 }
 
-// Constructor: Initializes a Carrier on a specific grid with placement details.
-Carrier::Carrier(Grid* on_grid, string start_space, char direction) : Ship(ShipType::BATTLESHIP, on_grid)
+// **Full Constructor**
+// Initializes a Carrier, sets its studs, and attempts to place it on the grid.
+Carrier::Carrier(Grid* on_grid, string start_space, char direction) : Ship(ShipType::CARRIER, on_grid)
 {
-    this->setStuds(); // Set up the studs for the carrier.
-    this->isReady = this->placeOnGrid(start_space, direction); // Try to place the carrier on the grid.
+    this->setStuds(); // Sets up the studs.
+    this->isReady = this->placeOnGrid(start_space, direction); // Attempts to place the Carrier on the grid.
 }
 
-// Destructor: Cleans up dynamically allocated Stud objects.
+// **Destructor**
+// Cleans up dynamically allocated memory for the studs.
 Carrier::~Carrier() {
-    for(size_t i = 0; i < 5; ++i) { // Loop through each stud.
-        delete this->studs[i]; // Delete the stud to free memory.
-        this->studs[i] = nullptr; // Set pointer to nullptr to avoid dangling pointers.
+    for(size_t i = 0; i < 5; ++i) {
+        delete this->studs[i]; // Deallocate each stud.
+        this->studs[i] = nullptr; // Set the pointer to nullptr.
     }
-}
+} 
 
-// Getter: Returns the array of studs in the carrier.
+// **Getter for All Studs**
+// Returns the array of pointers to the Carrier's studs.
 array<Stud*, 5> Carrier::getStuds() const {
     return this->studs;
 }
 
-// Getter: Returns a specific Stud by name if it exists in the carrier.
+// **Getter for a Specific Stud**
+// Returns a pointer to a specific stud based on its name.
 Stud* Carrier::getStud(StudName stud_name) const {
-    for(Stud* stud : this->studs) // Iterate over the studs.
-        if(stud->getStudName() == stud_name) // Check if the stud matches the given name.
-            return stud; // Return the found stud.
-    return nullptr; // Return nullptr if not found.
+    for(Stud* stud : this->studs)
+        if(stud->getStudName() == stud_name) // Match the stud by its name.
+            return stud;
+    return nullptr; // Return nullptr if no match is found.
 }
 
-// Method: Checks if a given Stud pointer is part of the carrier.
+// **Check if a Stud Belongs to the Carrier**
+// Determines whether the given stud is part of this Carrier.
 bool Carrier::hasStud(Stud* stud) const {
-    for(Stud* the_stud : this->studs) // Iterate over the studs.
-        if(the_stud == stud) // Check if the stud matches.
-            return true; // Return true if found.
-    return false; // Return false if not found.
+    for(Stud* the_stud : this->studs)
+        if(the_stud == stud) // Compare pointers to identify the stud.
+            return true;
+    return false; // Return false if the stud is not part of the Carrier.
 }
 
-// Method: Initializes the studs array with new Stud objects.
+// **Set Up Studs**
+// Initializes the Carrier's studs and associates them with the player and the ship.
 void Carrier::setStuds() {
-    for(size_t i = 0; i < 5; i++) { // Loop to create each stud.
-        this->studs[i] = new Stud(Studs::studNames[i], this->ofPlayer, this); // Create new Stud.
-        this->intactStuds.push_back(this->studs[i]); // Add the stud to the intactStuds list.
+    for(size_t i = 0; i < 5; i++) {
+        this->studs[i] = new Stud(Studs::studNames[i], this->ofPlayer, this); // Dynamically allocate new studs.
+        this->intactStuds.push_back(this->studs[i]); // Add the stud to the intact list.
     }
 }
 
-// Method: Attempts to place the carrier on the grid.
+// **Place Carrier on the Grid**
+// Tries to place the Carrier on the grid starting from a specific space and direction.
+// Returns true if placement is successful, otherwise false.
 bool Carrier::placeOnGrid(string start_space, char direction, bool print_out) const {
-    vector<string> ship_spaces; // Vector to hold the spaces occupied by the ship.
+    vector<string> ship_spaces;
     try {
-        ship_spaces = Grid::getVector(start_space, direction, 4); // Get the vector of spaces for the carrier.
-    } catch (out_of_range& e) { // Catch out_of_range exceptions.
+        // Attempt to get a vector of grid spaces for the Carrier.
+        ship_spaces = Grid::getVector(start_space, direction, 4); // Carrier has a length of 5 (4 additional spaces from the start).
+    } catch (out_of_range& e) {
+        // Handle out-of-bound placement attempts.
         if(print_out)
-            cout << "Out of range." << endl; // Print error message.
-        return false; // Return false if placement fails.
+            cout << "Out of range." << endl;
+        return false; // Placement failed.
     }
-    if(this->onGrid->hasNoGoSpace(ship_spaces)) { // Check if any space overlaps with restricted spaces.
+
+    // Check if any of the intended spaces conflict with existing ships.
+    if(this->onGrid->hasNoGoSpace(ship_spaces)) {
         if(print_out)
-            cout << "Ships cannot be touching." << endl; // Print warning message.
-        return false; // Return false if placement fails.
+            cout << "Ships cannot be touching." << endl;
+        return false; // Placement failed.
     }
-    // Place each stud on the grid.
+
+    // Place the Carrier's studs on the grid.
     for(size_t i = 0; i < 5; i++)
-        this->onGrid->setOnSpace(ship_spaces[i], this->studs[i]); // Set stud on the grid space.
-    
-    // Add no-go spaces to prevent close placement of other ships.
-    vector<string> ship_neighbors = Grid::neighborSpaces(ship_spaces); // Get neighboring spaces.
-    this->onGrid->addNoGoSpaces(ship_spaces); // Mark occupied spaces as no-go.
-    this->onGrid->addNoGoSpaces(ship_neighbors); // Mark neighboring spaces as no-go.
-    return true; // Return true if placement is successful.
+        this->onGrid->setOnSpace(ship_spaces[i], this->studs[i]);
+
+    // Mark surrounding spaces as no-go zones.
+    vector<string> ship_neighbors = Grid::neighborSpaces(ship_spaces);
+    this->onGrid->addNoGoSpaces(ship_spaces);       // Add the Carrier's spaces to no-go zones.
+    this->onGrid->addNoGoSpaces(ship_neighbors);    // Add neighboring spaces to no-go zones.
+
+    return true; // Placement successful.
 }
